@@ -1,60 +1,63 @@
 {
   "kind": "build_request",
-  "title": "Fix admin authorization error and ensure claim submissions appear in admin panel",
-  "projectName": "Vitalis Water Scratch & Win",
-  "priority": "high",
+  "title": "Update reward probability distribution with 'Better Luck Next Time' outcome",
+  "projectName": "Vitalist Water Scratch & Win",
+  "priority": "normal",
   "requirements": [
     {
-      "id": "REQ-30",
-      "text": "Fix the 'Unauthorized: Only admins can view submissions' error in the backend. In backend/main.mo, the getSubmissions (and any other admin-gated) function must not require Internet Identity authentication or any caller-identity check that blocks access when called from the frontend admin panel. Since the admin panel uses a hardcoded frontend credential check (email/password in sessionStorage), the backend getSubmissions, getStats, and markAsRedeemed functions must be accessible without rejecting the caller as unauthorized. Remove or disable any caller-identity-based admin guard in main.mo that currently causes this rejection, so any caller (including anonymous) can invoke these query/update functions.",
-      "target": "backend",
+      "id": "REQ-32",
+      "text": "Update the weighted reward probability in frontend/src/utils/rewardGenerator.ts to the following distribution: 40% chance of ₹10, 40% chance of 'Better Luck Next Time' (no monetary reward), 18% chance of ₹20, 0.01% chance of ₹100, and the remaining ~1.99% chance of ₹30. Remove all other reward amounts. The generator must return a discriminated result — either a numeric reward amount or a special 'better_luck' sentinel value — so the rest of the UI can branch accordingly.",
+      "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-1"
+          "msg-last"
         ],
         "quotes": [
-          "first error Unauthorized: Only admins can view submissions"
+          "set as 40 percentage of time if scarcth amount is 10 and 40 percentage better luck next time and 18 percentage of time 20 ruppes and 0.01 percentage 100rs else 30 rupees"
         ]
       },
       "acceptanceCriteria": [
-        "Calling getSubmissions from the frontend admin panel no longer returns an 'Unauthorized' error.",
-        "The backend compiles and deploys without errors after removing the admin guard.",
-        "getStats and markAsRedeemed functions are similarly accessible without authorization rejection.",
-        "All previously stored stable state (submissions) is preserved after the change."
+        "Over a large sample (e.g., 10,000 runs), ₹10 appears approximately 40% of the time.",
+        "Over a large sample, 'Better Luck Next Time' appears approximately 40% of the time.",
+        "Over a large sample, ₹20 appears approximately 18% of the time.",
+        "Over a large sample, ₹100 appears approximately 0.01% of the time.",
+        "Over a large sample, ₹30 appears for the remaining ~1.99% of cases.",
+        "No reward amounts other than ₹10, ₹20, ₹30, ₹100, and the 'better_luck' outcome are ever returned.",
+        "The generator function returns a typed result that clearly distinguishes a monetary reward from the 'Better Luck Next Time' outcome."
       ]
     },
     {
-      "id": "REQ-31",
-      "text": "Fix the end-to-end persistence and retrieval of claim submission data so that after a user submits the claim form, the full record (coupon code, reward amount, state, city, UPI ID, feedback, timestamp, status) is correctly stored in the Motoko backend's stable state and returned in full by getSubmissions. Audit backend/main.mo to ensure: (1) the submitClaim function writes all fields to stable storage without dropping or ignoring any field; (2) the getSubmissions function reads from the same stable variable and returns the complete list; (3) the Submission record type includes all fields: couponCode, rewardAmount, state, city, upiId, feedback, timestamp, status. Audit useQueries.ts to ensure the useSubmitClaim mutation passes all required fields with correct types matching the Motoko function signature, and on success invalidates the submissions React Query cache key so AdminPanel.tsx re-fetches fresh data.",
-      "target": "both",
+      "id": "REQ-33",
+      "text": "Update ScratchPage.tsx, ScratchCard.tsx, and RewardReveal.tsx to handle the 'Better Luck Next Time' outcome gracefully. When the scratch result is 'better_luck': (1) display a consolation message such as 'Better Luck Next Time!' prominently on the revealed scratch card face instead of a reward amount; (2) do NOT show the RewardReveal section, ClaimForm, or the 'Click to Claim Your Reward' button; (3) do NOT trigger confetti; (4) show a friendly styled card with the consolation message and the unique coupon code. When the result is a monetary amount, the existing flow (reward reveal, claim form, confetti) continues as normal.",
+      "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-1"
+          "msg-last"
         ],
         "quotes": [
-          "second error after they claim it the data of coupon and other like amount and upi is not showing in admin panel"
+          "40 percentage better luck next time"
         ]
       },
       "acceptanceCriteria": [
-        "After a user submits the claim form, the admin panel immediately shows the new submission row with all fields populated: coupon code, reward amount, state, city, UPI ID, feedback, timestamp, and status.",
-        "The Motoko backend's submitClaim function stores all fields and getSubmissions returns them.",
-        "The useSubmitClaim mutation in useQueries.ts calls the backend with all required arguments and correct types.",
-        "On successful submission, the React Query submissions cache is invalidated so AdminPanel fetches fresh data.",
-        "No fields are missing or undefined in the admin panel table after submission."
+        "When a 'Better Luck Next Time' outcome is generated, the scratch card face shows 'Better Luck Next Time!' text after scratching completes.",
+        "When a 'Better Luck Next Time' outcome is generated, the RewardReveal section is not rendered in the DOM.",
+        "When a 'Better Luck Next Time' outcome is generated, the ClaimForm is not rendered in the DOM.",
+        "When a 'Better Luck Next Time' outcome is generated, the confetti animation does not fire.",
+        "When a 'Better Luck Next Time' outcome is generated, the unique VW-XXXX-XXXX coupon code is still displayed on the consolation card.",
+        "When a monetary reward amount is generated, the full existing claim flow (reward reveal, claim form, confetti) works as before."
       ]
     }
   ],
   "constraints": [
-    "Do not implement Internet Identity or any on-chain authentication for the admin panel — admin access is controlled entirely by the hardcoded frontend credential check (email: shajan@vitalis.com, password: India@123) stored in sessionStorage.",
-    "All Motoko logic must remain in backend/main.mo as a single actor.",
-    "Do not modify files listed in frontend.immutablePaths.",
-    "Preserve all existing stable submission data in the backend."
+    "Do not change any existing backend Motoko functions or data models.",
+    "Do not modify any files listed in frontend.immutablePaths.",
+    "Reward amounts must be strictly limited to ₹10, ₹20, ₹30, ₹100, and the 'Better Luck Next Time' outcome — no other values."
   ],
   "nonGoals": [
-    "Adding Internet Identity login or on-chain role-based access control.",
-    "Redesigning the admin panel UI or scratch card UI.",
-    "Changing the reward probability weights.",
-    "Adding new form fields or claim flow steps."
+    "Adding any new backend endpoints or schema changes.",
+    "Changing the admin panel UI or login flow.",
+    "Modifying the confetti colors or sound effects.",
+    "Changing the scratch card visual design or glassmorphism styling."
   ],
   "imageRequirements": {
     "required": [],

@@ -1,25 +1,31 @@
 /**
  * Weighted reward generator
- * ₹10  → 90.0%
- * ₹20  →  4.0%
- * ₹30  →  3.9%
- * ₹90  →  2.0%
- * ₹100 →  0.1%
+ * ₹10            → 40.00%
+ * Better Luck    → 40.00%
+ * ₹20            → 18.00%
+ * ₹30            →  1.99%
+ * ₹100           →  0.01%
  */
-const REWARDS: { amount: number; cumulative: number }[] = [
-  { amount: 10,  cumulative: 0.900 },
-  { amount: 20,  cumulative: 0.940 },
-  { amount: 30,  cumulative: 0.979 },
-  { amount: 90,  cumulative: 0.999 },
-  { amount: 100, cumulative: 1.000 },
-];
 
-export function generateReward(): number {
+export type RewardResult =
+  | { type: 'reward'; amount: number }
+  | { type: 'better_luck' };
+
+// Cumulative thresholds (must sum to 1.0000)
+// 0.0000 – 0.4000 → ₹10         (40%)
+// 0.4000 – 0.8000 → better_luck  (40%)
+// 0.8000 – 0.9800 → ₹20         (18%)
+// 0.9800 – 0.9999 → ₹30         (~1.99%)
+// 0.9999 – 1.0000 → ₹100        (0.01%)
+
+export function generateReward(): RewardResult {
   const rand = Math.random();
-  for (const tier of REWARDS) {
-    if (rand < tier.cumulative) return tier.amount;
-  }
-  return 10;
+
+  if (rand < 0.4000) return { type: 'reward', amount: 10 };
+  if (rand < 0.8000) return { type: 'better_luck' };
+  if (rand < 0.9800) return { type: 'reward', amount: 20 };
+  if (rand < 0.9999) return { type: 'reward', amount: 30 };
+  return { type: 'reward', amount: 100 };
 }
 
 export function generateUniqueCode(): string {

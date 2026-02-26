@@ -1,12 +1,13 @@
 # Specification
 
 ## Summary
-**Goal:** Fix the admin authorization error in the backend and ensure claim submission data is fully stored and visible in the admin panel.
+**Goal:** Update the scratch card reward system to include a "Better Luck Next Time" outcome with a 40% probability, and handle this outcome gracefully throughout the UI.
 
 **Planned changes:**
-- Remove or disable the caller-identity-based admin guard in `backend/main.mo` so that `getSubmissions`, `getStats`, and `markAsRedeemed` are accessible without returning an "Unauthorized" error.
-- Audit and fix `backend/main.mo` to ensure the `Submission` record type includes all fields (couponCode, rewardAmount, state, city, upiId, feedback, timestamp, status) and that `submitClaim` writes all fields to stable storage.
-- Audit and fix `useQueries.ts` to ensure the `useSubmitClaim` mutation passes all required fields with correct types matching the Motoko function signature.
-- On successful claim submission, invalidate the React Query submissions cache so `AdminPanel.tsx` re-fetches fresh data.
+- Update `rewardGenerator.ts` to use the new probability distribution: 40% ₹10, 40% Better Luck Next Time, 18% ₹20, 0.01% ₹100, ~1.99% ₹30, returning a discriminated type (numeric reward or `better_luck` sentinel)
+- Update `ScratchCard.tsx` to display "Better Luck Next Time!" text on the revealed card face when the outcome is `better_luck`
+- Update `ScratchPage.tsx` to suppress confetti, RewardReveal section, and ClaimForm when the outcome is `better_luck`
+- Update `RewardReveal.tsx` to handle the `better_luck` case (not rendered for non-monetary outcomes)
+- Show a friendly consolation card with the unique coupon code (VW-XXXX-XXXX) when the outcome is `better_luck`
 
-**User-visible outcome:** After a user submits the claim form, all submission details (coupon code, reward amount, state, city, UPI ID, feedback, timestamp, status) immediately appear in the admin panel without any authorization errors.
+**User-visible outcome:** When a user scratches a card and gets the "Better Luck Next Time" result, they see a consolation message with their coupon code instead of a reward amount, with no claim form or confetti. Monetary reward outcomes continue to work as before.

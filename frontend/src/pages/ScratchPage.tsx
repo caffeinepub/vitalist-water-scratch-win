@@ -8,7 +8,7 @@ import WaterDropIntro from '../components/WaterDropIntro';
 import ConfirmationNotification from '../components/ConfirmationNotification';
 import AdminLoginModal from '../components/AdminLoginModal';
 import Footer from '../components/Footer';
-import { generateUniqueCode, generateReward } from '../utils/rewardGenerator';
+import { generateUniqueCode, generateReward, RewardResult } from '../utils/rewardGenerator';
 
 interface ScratchPageProps {
   onAdminLoginSuccess: () => void;
@@ -21,15 +21,18 @@ export default function ScratchPage({ onAdminLoginSuccess }: ScratchPageProps) {
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [showAdminModal, setShowAdminModal] = useState(false);
   const [couponCode, setCouponCode] = useState(() => generateUniqueCode());
-  const [rewardAmount, setRewardAmount] = useState(() => generateReward());
+  const [rewardResult, setRewardResult] = useState<RewardResult>(() => generateReward());
 
   const handleReveal = useCallback(() => {
     const newCode = generateUniqueCode();
-    const newAmount = generateReward();
+    const newResult = generateReward();
     setCouponCode(newCode);
-    setRewardAmount(newAmount);
+    setRewardResult(newResult);
     setScratchComplete(true);
-    setConfettiTriggered(true);
+    // Only trigger confetti for monetary rewards
+    if (newResult.type === 'reward') {
+      setConfettiTriggered(true);
+    }
   }, []);
 
   const handleClaimSuccess = useCallback(() => {
@@ -46,15 +49,18 @@ export default function ScratchPage({ onAdminLoginSuccess }: ScratchPageProps) {
     el?.scrollIntoView({ behavior: 'smooth' });
   }, []);
 
+  const rewardAmount = rewardResult.type === 'reward' ? rewardResult.amount : 0;
+
   if (showIntro) {
     return <WaterDropIntro onComplete={() => setShowIntro(false)} />;
   }
 
   return (
     <div className="scratch-page-bg min-h-screen flex flex-col">
+      {/* Confetti only for monetary rewards */}
       <Confetti triggered={confettiTriggered} />
 
-      {showConfirmation && (
+      {showConfirmation && rewardResult.type === 'reward' && (
         <ConfirmationNotification
           amount={rewardAmount}
           onClose={() => setShowConfirmation(false)}
@@ -84,21 +90,21 @@ export default function ScratchPage({ onAdminLoginSuccess }: ScratchPageProps) {
         <div className="scratch-card-wrapper">
           <ScratchCard
             couponCode={couponCode}
-            rewardAmount={rewardAmount}
+            rewardResult={rewardResult}
             onReveal={handleReveal}
           />
         </div>
 
-        {/* Post-scratch sections — only visible after scratch complete */}
+        {/* Post-scratch sections — only visible after scratch complete for monetary rewards */}
         <div
           className={`w-full max-w-sm flex flex-col gap-6 transition-all duration-700 ${
-            scratchComplete
+            scratchComplete && rewardResult.type === 'reward'
               ? 'opacity-100 translate-y-0 pointer-events-auto'
               : 'opacity-0 translate-y-8 pointer-events-none'
           }`}
-          aria-hidden={!scratchComplete}
+          aria-hidden={!(scratchComplete && rewardResult.type === 'reward')}
         >
-          {scratchComplete && (
+          {scratchComplete && rewardResult.type === 'reward' && (
             <>
               <RewardReveal
                 amount={rewardAmount}

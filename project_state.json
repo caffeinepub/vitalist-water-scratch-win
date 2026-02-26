@@ -1,15 +1,15 @@
 {
   "schemaVersion": "1.0.0",
-  "projectStateVersion": 21,
-  "summary": "Mobile-first Scratch & Win reward website for 'Vitalist Water' brand campaign. Users scan a QR code on a bottle and get a random reward via an interactive scratch card UI. After fully scratching, a new unique code and reward amount are revealed. The claim form is hidden by default and only appears after the scratch is complete. Reward distribution is weighted: 90% chance ₹10, 4% chance ₹20, ~3.9% chance ₹30, 2% chance ₹90, 0.1% chance ₹100. After scratching, users click 'Claim' and fill a form (state, city, feedback, UPI ID) to receive payment. A 'Money will be in your account soon' confirmation animation is shown after form submission. Admin panel is accessible by double-clicking the Vitalis logo, then logging in with email 'shajan@vitalis.com' and password 'India@123'. Admin panel shows all submitted coupon codes and claim details, allows coupon verification, and lets admins mark coupons as 'redeemed/closed'. Built with pure HTML/CSS/JS, no backend, embeddable in Google Sites. Premium professional design with uploaded brand logo.",
+  "projectStateVersion": 23,
+  "summary": "Mobile-first Scratch & Win reward website for 'Vitalist Water' brand campaign. Users scan a QR code on a bottle and get a random reward via an interactive scratch card UI. After fully scratching, a new unique code and reward amount are revealed. The claim form is hidden by default and only appears after the scratch is complete. Reward distribution is weighted: 40% chance ₹10, 40% chance 'Better Luck Next Time' (no reward), 18% chance ₹20, 0.01% chance ₹100, else ₹30. After scratching, users click 'Claim' and fill a form (state, city, feedback, UPI ID) to receive payment. A 'Money will be in your account soon' confirmation animation is shown after form submission. Admin panel is accessible by double-clicking the Vitalis logo, then logging in with email 'shajan@vitalis.com' and password 'India@123'. Admin panel shows all submitted coupon codes and claim details, allows coupon verification, and lets admins mark coupons as 'redeemed/closed'. Built with pure HTML/CSS/JS, no backend, embeddable in Google Sites. Premium professional design with uploaded brand logo.",
   "architectural_notes": [
     "Pure HTML/CSS/JS only — no backend, no external paid libraries",
     "Must be embeddable in Google Sites and optimized for QR scan mobile traffic",
-    "Reward probability is weighted: 90% ₹10, 4% ₹20, ~3.9% ₹30, 2% ₹90, 0.1% ₹100",
     "Claim form collects state, city, feedback, UPI ID — stored in localStorage for admin panel (no backend)",
     "Admin panel access: double-click Vitalis logo → email/password login (shajan@vitalis.com / India@123)",
     "Claim form is hidden by default; only shown after scratch card is fully revealed",
-    "Admin panel must support coupon redemption status: each coupon can be marked as 'redeemed/closed' by the admin; redeemed coupons cannot be claimed again"
+    "Admin panel must support coupon redemption status: each coupon can be marked as 'redeemed/closed' by the admin; redeemed coupons cannot be claimed again",
+    "Reward probability updated: 40% ₹10, 40% 'Better Luck Next Time', 18% ₹20, 0.01% ₹100, ~1.99% ₹30. 'Better Luck Next Time' outcomes must not show the claim form."
   ],
   "known_issues": [
     "Previous UI was reported as very ugly — bottle illustration removed, form visibility and overall layout needs redesign",
@@ -23,7 +23,7 @@
     "Admin panel throws 'Unauthorized: Only admins can view submissions' error — authorization check is incorrectly blocking admin access to getSubmissions",
     "After claim submission, coupon code, reward amount, UPI ID and other details are not showing in the admin panel — submitted data is not being persisted or retrieved correctly"
   ],
-  "isFixRequest": true,
+  "isFixRequest": false,
   "existing_features": [
     {
       "id": "feature-generate-a-random-reward-amount-between-10-and-100-in-multiples-of-10-every-time-the-page-loads-also-generate-a-unique-alphanumeric-code-e-g-vw-xxxx-xxxx-per-session-that-is-displayed-on-the-scratch-card-before-and-after-reveal",
@@ -240,6 +240,22 @@
         "REQ-31"
       ],
       "version": 1
+    },
+    {
+      "id": "feature-update-the-weighted-reward-probability-in-frontend-src-utils-rewardgenerator-ts-to-the-following-distribution-40-chance-of-10-40-chance-of-better-luck-next-time-no-monetary-reward-18-chance-of-20-0-01-chance-of-100-and-the-remaining-1-99-chance-of-30-remove-all-other-reward-amounts-the-generator-must-return-a-discriminated-result-either-a-numeric-reward-amount-or-a-special-better-luck-sentinel-value-so-the-rest-of-the-ui-can-branch-accordingly",
+      "title": "Update the weighted reward probability in frontend/src/utils/rewardGenerator.ts to the following distribution: 40% chance of ₹10, 40% chance of 'Better Luck Next Time' (no monetary reward), 18% chance of ₹20, 0.01% chance of ₹100, and the remaining ~1.99% chance of ₹30. Remove all other reward amounts. The generator must return a discriminated result — either a numeric reward amount or a special 'better_luck' sentinel value — so the rest of the UI can branch accordingly.",
+      "reqIds": [
+        "REQ-32"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-scratchpage-tsx-scratchcard-tsx-and-rewardreveal-tsx-to-handle-the-better-luck-next-time-outcome-gracefully-when-the-scratch-result-is-better-luck-1-display-a-consolation-message-such-as-better-luck-next-time-prominently-on-the-revealed-scratch-card-face-instead-of-a-reward-amount-2-do-not-show-the-rewardreveal-section-claimform-or-the-click-to-claim-your-reward-button-3-do-not-trigger-confetti-4-show-a-friendly-styled-card-with-the-consolation-message-and-the-unique-coupon-code-when-the-result-is-a-monetary-amount-the-existing-flow-reward-reveal-claim-form-confetti-continues-as-normal",
+      "title": "Update ScratchPage.tsx, ScratchCard.tsx, and RewardReveal.tsx to handle the 'Better Luck Next Time' outcome gracefully. When the scratch result is 'better_luck': (1) display a consolation message such as 'Better Luck Next Time!' prominently on the revealed scratch card face instead of a reward amount; (2) do NOT show the RewardReveal section, ClaimForm, or the 'Click to Claim Your Reward' button; (3) do NOT trigger confetti; (4) show a friendly styled card with the consolation message and the unique coupon code. When the result is a monetary amount, the existing flow (reward reveal, claim form, confetti) continues as normal.",
+      "reqIds": [
+        "REQ-33"
+      ],
+      "version": 1
     }
   ],
   "new_feature_requests": [
@@ -288,12 +304,6 @@
     {
       "id": "AR-8",
       "summary": "Fully mobile-optimized, fast-loading, embed-friendly for Google Sites",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-9",
-      "summary": "Weighted reward probability: 90% ₹10, 4% ₹20, ~4% ₹30, 2% ₹90, 0.1% ₹100",
       "reqIds": [],
       "status": "pending"
     },
@@ -387,6 +397,12 @@
       "reqIds": [
         "REQ-30"
       ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-31",
+      "summary": "Update reward probability: 40% ₹10, 40% 'Better Luck Next Time' (no reward), 18% ₹20, 0.01% ₹100, ~1.99% ₹30. Handle 'Better Luck Next Time' outcome gracefully in the UI (no claim form, show consolation message).",
+      "reqIds": [],
       "status": "pending"
     }
   ],
