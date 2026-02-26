@@ -1,18 +1,8 @@
-interface FooterProps {
-  showAdminLink?: boolean;
-}
-
-export default function Footer({ showAdminLink = true }: FooterProps) {
+export default function Footer() {
   const year = new Date().getFullYear();
   const appId = encodeURIComponent(
     typeof window !== 'undefined' ? window.location.hostname : 'vitalis-water'
   );
-
-  const goAdmin = (e: React.MouseEvent) => {
-    e.preventDefault();
-    window.history.pushState({}, '', '/admin');
-    window.dispatchEvent(new PopStateEvent('popstate'));
-  };
 
   return (
     <footer className="site-footer">
@@ -41,11 +31,6 @@ export default function Footer({ showAdminLink = true }: FooterProps) {
           caffeine.ai
         </a>
       </p>
-      {showAdminLink && (
-        <a href="/admin" onClick={goAdmin} className="footer-admin-link">
-          Admin
-        </a>
-      )}
     </footer>
   );
 }

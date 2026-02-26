@@ -1,55 +1,65 @@
 import { useScratchCanvas } from '../hooks/useScratchCanvas';
 
 interface ScratchCardProps {
-  uniqueCode: string;
+  couponCode: string;
   rewardAmount: number;
   onReveal: () => void;
-  revealed: boolean;
 }
 
-export default function ScratchCard({ uniqueCode, rewardAmount, onReveal, revealed }: ScratchCardProps) {
-  const { canvasRef, scratchProgress } = useScratchCanvas({
-    onReveal,
-    revealThreshold: 0.6,
-  });
+export default function ScratchCard({ couponCode, rewardAmount, onReveal }: ScratchCardProps) {
+  const { canvasRef, scratchProgress } = useScratchCanvas({ onReveal, revealThreshold: 0.6 });
+
+  const isRevealed = scratchProgress >= 0.6;
 
   return (
-    <div className="scratch-card-wrapper">
-      {/* Card container */}
-      <div className="scratch-card-container">
-        {/* Unique code badge */}
-        <div className="code-badge">
-          <span className="code-label">CODE</span>
-          <span className="code-value">{uniqueCode}</span>
+    <div className="scratch-card-container">
+      {/* Card face — always rendered beneath the canvas */}
+      <div className="scratch-card-face">
+        {/* Header strip */}
+        <div className="scratch-card-header">
+          <span className="scratch-card-brand">VITALIS WATER</span>
+          <span className="scratch-card-badge">WINNER</span>
         </div>
 
-        {/* Reward area */}
-        <div className="reward-area">
-          <div className="reward-inner">
-            <div className="reward-label">🎉 You Won!</div>
-            <div className="reward-amount">₹{rewardAmount}</div>
-            <div className="reward-sublabel">Cashback Reward</div>
+        {/* Reward amount */}
+        <div className="scratch-card-reward-section">
+          <p className="scratch-card-you-won">🎉 Congratulations! You Won</p>
+          <div className="scratch-card-amount">
+            <span className="scratch-card-currency">₹</span>
+            <span className="scratch-card-value">{rewardAmount}</span>
+          </div>
+          <p className="scratch-card-cashback">Instant Cashback</p>
+        </div>
+
+        {/* Coupon code */}
+        <div className="scratch-card-code-section">
+          <p className="scratch-card-code-label">YOUR UNIQUE CODE</p>
+          <div className="scratch-card-code-badge">
+            <span className="scratch-card-code-text">{couponCode}</span>
           </div>
         </div>
 
-        {/* Canvas overlay */}
-        {!revealed && (
-          <canvas
-            ref={canvasRef}
-            width={320}
-            height={180}
-            className="scratch-canvas"
-            style={{ cursor: 'crosshair', touchAction: 'none' }}
-          />
-        )}
-
-        {/* Progress hint */}
-        {!revealed && scratchProgress > 0 && scratchProgress < 0.6 && (
-          <div className="scratch-hint">
-            {Math.round(scratchProgress * 100)}% scratched — keep going!
-          </div>
-        )}
+        {/* Footer */}
+        <div className="scratch-card-footer">
+          <span className="scratch-card-validity">Valid for 30 days • T&C Apply</span>
+        </div>
       </div>
+
+      {/* Scratch overlay canvas */}
+      {!isRevealed && (
+        <canvas
+          ref={canvasRef}
+          width={320}
+          height={320}
+          className="scratch-canvas"
+          style={{ touchAction: 'none' }}
+        />
+      )}
+
+      {/* Hint */}
+      {!isRevealed && (
+        <p className="scratch-hint">👆 Scratch here to reveal your reward</p>
+      )}
     </div>
   );
 }

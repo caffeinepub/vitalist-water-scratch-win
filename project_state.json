@@ -1,16 +1,24 @@
 {
   "schemaVersion": "1.0.0",
-  "projectStateVersion": 5,
-  "summary": "Mobile-first Scratch & Win reward website for 'Vitalist Water' brand campaign. Users scan a QR code on a bottle and get a random reward via an interactive scratch card UI. Reward distribution is weighted: 90% chance ₹10, 4% chance ₹20, 2% chance ₹30 (others), 2% chance ₹90, 0.1% chance ₹100. After scratching, users click 'Claim' and fill a form (state, city, feedback, UPI ID) to receive payment. A 'Money will be in your account soon' confirmation animation is shown after form submission. Includes an admin panel to view all submitted coupon codes and claim details. Built with pure HTML/CSS/JS, no backend, embeddable in Google Sites. Premium professional design with uploaded brand logo.",
+  "projectStateVersion": 13,
+  "summary": "Mobile-first Scratch & Win reward website for 'Vitalist Water' brand campaign. Users scan a QR code on a bottle and get a random reward via an interactive scratch card UI. After fully scratching, a new unique code and reward amount are revealed. The claim form is hidden by default and only appears after the scratch is complete. Reward distribution is weighted: 90% chance ₹10, 4% chance ₹20, ~3.9% chance ₹30, 2% chance ₹90, 0.1% chance ₹100. After scratching, users click 'Claim' and fill a form (state, city, feedback, UPI ID) to receive payment. A 'Money will be in your account soon' confirmation animation is shown after form submission. Admin panel is accessible by double-clicking the Vitalis logo, then logging in with email 'shajan@vitalis.com' and password 'India@123'. Admin panel shows all submitted coupon codes and claim details, allows coupon verification, and lets admins mark coupons as 'redeemed/closed'. Built with pure HTML/CSS/JS, no backend, embeddable in Google Sites. Premium professional design with uploaded brand logo.",
   "architectural_notes": [
     "Pure HTML/CSS/JS only — no backend, no external paid libraries",
     "Must be embeddable in Google Sites and optimized for QR scan mobile traffic",
     "Reward probability is weighted: 90% ₹10, 4% ₹20, ~3.9% ₹30, 2% ₹90, 0.1% ₹100",
-    "Claim form collects state, city, feedback, UPI ID — stored in localStorage for admin panel (no backend)"
+    "Claim form collects state, city, feedback, UPI ID — stored in localStorage for admin panel (no backend)",
+    "Admin panel access: double-click Vitalis logo → email/password login (shajan@vitalis.com / India@123)",
+    "Claim form is hidden by default; only shown after scratch card is fully revealed",
+    "Admin panel must support coupon redemption status: each coupon can be marked as 'redeemed/closed' by the admin; redeemed coupons cannot be claimed again"
   ],
-  "known_issues": [],
-  "isFixRequest": false,
-  "imageRequirements": "## Edit Images\n- Crop to tight bounds, remove white background, preserve transparent PNG (image.png > vitalis-logo.dim_300x120.png)",
+  "known_issues": [
+    "Previous UI was reported as very ugly — bottle illustration removed, form visibility and overall layout needs redesign",
+    "Claim and Submit buttons are not functioning — clicks do nothing or fail silently",
+    "Vitalis logo is not fully visible in the header — appears cropped or poorly styled",
+    "Admin panel UI is reported as very bad — needs full redesign and coupon verification/redemption feature",
+    "Submit button throws an error after clicking — claim submission flow is broken and needs to be fixed"
+  ],
+  "isFixRequest": true,
   "existing_features": [
     {
       "id": "feature-generate-a-random-reward-amount-between-10-and-100-in-multiples-of-10-every-time-the-page-loads-also-generate-a-unique-alphanumeric-code-e-g-vw-xxxx-xxxx-per-session-that-is-displayed-on-the-scratch-card-before-and-after-reveal",
@@ -115,6 +123,86 @@
         "REQ-14"
       ],
       "version": 1
+    },
+    {
+      "id": "feature-change-the-admin-panel-access-mechanism-instead-of-the-current-simple-password-prompt-or-footer-link-the-admin-panel-must-be-triggered-by-double-clicking-the-vitalis-logo-in-the-header-after-the-double-click-display-a-modal-login-dialog-that-prompts-for-an-email-field-and-a-password-field-the-hardcoded-valid-credentials-must-be-email-shajan-vitalis-com-and-password-india-123-if-credentials-match-navigate-to-or-reveal-the-admin-panel-if-they-do-not-match-show-an-inline-error-message-the-logo-double-click-trigger-must-be-invisible-to-regular-users-no-visible-hint-or-label",
+      "title": "Change the admin panel access mechanism: instead of the current simple password prompt or footer link, the admin panel must be triggered by double-clicking the Vitalis logo in the header. After the double-click, display a modal login dialog that prompts for an email field and a password field. The hardcoded valid credentials must be email: 'shajan@vitalis.com' and password: 'India@123'. If credentials match, navigate to or reveal the admin panel. If they do not match, show an inline error message. The logo double-click trigger must be invisible to regular users (no visible hint or label).",
+      "reqIds": [
+        "REQ-15"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-remove-the-water-bottle-illustration-and-the-hero-section-entirely-from-scratchpage-the-page-layout-should-be-logo-at-top-scan-scratch-win-tagline-as-a-simple-text-line-no-hero-image-congratulations-you-have-won-heading-scratch-card-reward-reveal-shown-only-after-scratch-claim-form-shown-only-after-scratch-footer",
+      "title": "Remove the water bottle illustration and the Hero section entirely from ScratchPage. The page layout should be: Logo at top → 'Scan. Scratch. Win.' tagline (as a simple text line, no hero image) → 'Congratulations! You have won' heading → Scratch card → Reward reveal (shown only after scratch) → Claim form (shown only after scratch) → Footer.",
+      "reqIds": [
+        "REQ-16"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-after-the-scratch-card-is-fully-scratched-100-revealed-automatically-generate-a-brand-new-unique-vw-xxxx-xxxx-code-and-a-new-weighted-random-reward-amount-display-the-new-code-and-new-amount-on-the-revealed-scratch-card-face-immediately-after-the-scratch-completes",
+      "title": "After the scratch card is fully scratched (100% revealed), automatically generate a brand-new unique VW-XXXX-XXXX code and a new weighted random reward amount. Display the new code and new amount on the revealed scratch card face immediately after the scratch completes.",
+      "reqIds": [
+        "REQ-17"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-the-claim-form-claimform-component-and-the-reward-reveal-section-rewardreveal-component-must-be-completely-hidden-and-not-rendered-in-the-dom-until-the-scratch-card-has-been-fully-scratched-after-the-scratch-completes-reveal-both-sections-with-a-smooth-fade-in-slide-up-css-transition-no-claim-button-or-form-fields-should-be-visible-to-the-user-before-scratching-is-complete",
+      "title": "The claim form (ClaimForm component) and the reward reveal section (RewardReveal component) must be completely hidden and not rendered in the DOM until the scratch card has been fully scratched. After the scratch completes, reveal both sections with a smooth fade-in / slide-up CSS transition. No claim button or form fields should be visible to the user before scratching is complete.",
+      "reqIds": [
+        "REQ-18"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-perform-a-comprehensive-ui-redesign-of-the-scratchpage-to-fix-the-ugly-layout-apply-a-clean-spacious-single-column-mobile-first-layout-max-width-420px-centered-use-the-existing-deep-ocean-to-light-blue-gradient-background-the-scratch-card-must-be-the-dominant-visual-element-large-centered-with-strong-glassmorphism-backdrop-blur-semi-transparent-white-border-subtle-shadow-reward-reveal-and-claim-form-sections-must-each-be-contained-in-well-padded-glassmorphism-cards-with-clear-typographic-hierarchy-remove-any-cramped-overlapping-or-misaligned-elements-ensure-all-sections-have-consistent-vertical-spacing-and-the-overall-page-looks-polished-and-premium",
+      "title": "Perform a comprehensive UI redesign of the ScratchPage to fix the ugly layout. Apply a clean, spacious single-column mobile-first layout (max-width 420px, centered). Use the existing deep ocean-to-light-blue gradient background. The scratch card must be the dominant visual element — large, centered, with strong glassmorphism (backdrop-blur, semi-transparent white border, subtle shadow). Reward reveal and claim form sections must each be contained in well-padded glassmorphism cards with clear typographic hierarchy. Remove any cramped, overlapping, or misaligned elements. Ensure all sections have consistent vertical spacing and the overall page looks polished and premium.",
+      "reqIds": [
+        "REQ-19"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-fix-the-end-to-end-claim-flow-in-claimform-tsx-ensure-the-submit-button-correctly-triggers-form-validation-calls-the-usesubmitclaim-hook-with-all-required-fields-coupon-code-reward-amount-state-city-feedback-upi-id-handles-loading-and-error-states-visibly-and-on-success-shows-the-confirmationnotification-component-trace-and-fix-any-broken-prop-wiring-or-missing-state-connections-between-scratchpage-rewardreveal-and-claimform-that-prevent-clicks-from-having-any-effect",
+      "title": "Fix the end-to-end claim flow in ClaimForm.tsx: ensure the 'Submit' button correctly triggers form validation, calls the useSubmitClaim hook with all required fields (coupon code, reward amount, state, city, feedback, UPI ID), handles loading and error states visibly, and on success shows the ConfirmationNotification component. Trace and fix any broken prop wiring or missing state connections between ScratchPage, RewardReveal, and ClaimForm that prevent clicks from having any effect.",
+      "reqIds": [
+        "REQ-20"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-fix-the-vitalis-logo-display-in-the-logo-component-and-header-area-ensure-vitalis-logo-png-renders-at-full-size-without-any-cropping-clipping-or-overflow-hidden-that-cuts-it-off-set-explicit-dimensions-appropriate-for-a-mobile-header-e-g-height-64-80px-auto-width-use-object-fit-contain-remove-any-conflicting-max-width-or-overflow-constraints-and-ensure-the-logo-is-fully-visible-and-prominent-on-all-screen-sizes",
+      "title": "Fix the Vitalis logo display in the Logo component and header area: ensure vitalis-logo.png renders at full size without any cropping, clipping, or overflow hidden that cuts it off. Set explicit dimensions appropriate for a mobile header (e.g., height 64–80px, auto width), use object-fit: contain, remove any conflicting max-width or overflow constraints, and ensure the logo is fully visible and prominent on all screen sizes.",
+      "reqIds": [
+        "REQ-21"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-fully-redesign-the-adminpanel-page-frontend-src-pages-adminpanel-tsx-with-a-professional-polished-ui-apply-the-brand-glassmorphism-design-system-backdrop-blur-panels-gradient-background-clean-typography-layout-must-include-1-a-stats-summary-row-at-the-top-showing-total-submissions-and-reward-breakdowns-2-a-prominent-coupon-verification-tool-a-text-input-where-the-admin-can-enter-a-vw-xxxx-xxxx-code-and-click-verify-to-see-full-submission-details-and-the-current-status-of-that-coupon-active-or-redeemed-closed-3-a-full-searchable-filterable-submissions-table-with-columns-coupon-code-reward-amount-state-city-upi-id-feedback-timestamp-and-status-the-table-must-have-clear-row-styling-alternating-or-bordered-rows-and-be-horizontally-scrollable-on-mobile",
+      "title": "Fully redesign the AdminPanel page (frontend/src/pages/AdminPanel.tsx) with a professional, polished UI. Apply the brand glassmorphism design system (backdrop-blur panels, gradient background, clean typography). Layout must include: (1) a stats summary row at the top showing total submissions and reward breakdowns; (2) a prominent coupon verification tool — a text input where the admin can enter a VW-XXXX-XXXX code and click 'Verify' to see full submission details and the current status of that coupon (active or redeemed/closed); (3) a full searchable/filterable submissions table with columns: Coupon Code, Reward Amount, State, City, UPI ID, Feedback, Timestamp, and Status. The table must have clear row styling, alternating or bordered rows, and be horizontally scrollable on mobile.",
+      "reqIds": [
+        "REQ-22"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-usequeries-ts-to-add-a-usemarkasredeemed-mutation-hook-that-calls-the-backend-markasredeemed-function-with-a-coupon-code-and-invalidates-the-submissions-query-on-success-expose-this-hook-for-use-in-adminpanel-tsx",
+      "title": "Update useQueries.ts to add a useMarkAsRedeemed mutation hook that calls the backend markAsRedeemed function with a coupon code and invalidates the submissions query on success. Expose this hook for use in AdminPanel.tsx.",
+      "reqIds": [
+        "REQ-24"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-diagnose-and-fix-the-runtime-error-thrown-when-the-user-clicks-the-submit-button-on-the-claimform-inspect-the-usesubmitclaim-hook-in-usequeries-ts-and-the-claimform-component-to-identify-the-exact-failure-point-e-g-missing-or-undefined-actor-incorrect-argument-shape-passed-to-the-backend-submitclaim-function-type-mismatch-between-frontend-payload-and-motoko-actor-method-signature-ensure-the-mutation-is-called-with-all-required-fields-couponcode-rewardamount-state-city-feedback-upiid-with-correct-types-error-boundaries-are-in-place-and-the-error-is-surfaced-to-the-user-with-a-visible-inline-message-rather-than-a-silent-failure-or-crash",
+      "title": "Diagnose and fix the runtime error thrown when the user clicks the 'Submit' button on the ClaimForm. Inspect the useSubmitClaim hook in useQueries.ts and the ClaimForm component to identify the exact failure point (e.g., missing or undefined actor, incorrect argument shape passed to the backend submitClaim function, type mismatch between frontend payload and Motoko actor method signature). Ensure the mutation is called with all required fields (couponCode, rewardAmount, state, city, feedback, upiId) with correct types, error boundaries are in place, and the error is surfaced to the user with a visible inline message rather than a silent failure or crash.",
+      "reqIds": [
+        "REQ-25"
+      ],
+      "version": 1
     }
   ],
   "new_feature_requests": [
@@ -201,6 +289,44 @@
       "summary": "On claim form submission, save the entry to the Motoko backend actor. Each submission must store: the unique coupon code (VW-XXXX-XXXX), reward amount, state, city, feedback, UPI ID, and a timestamp. Expose a query method to retrieve all submissions (for the admin panel). Expose a query method to retrieve a single submission by coupon code.",
       "reqIds": [
         "REQ-12"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-19",
+      "summary": "Admin panel login: triggered by double-clicking the Vitalis logo, then prompting for email (shajan@vitalis.com) and password (India@123) instead of a simple password prompt",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-20",
+      "summary": "Remove the water bottle illustration from the page — show only the scratch card UI. After fully scratching, generate and display a new unique code and reward amount. The claim form must be hidden until scratch is complete, then revealed cleanly.",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-21",
+      "summary": "Fix the claim/submit button flow — clicking 'Claim' and 'Submit' must work correctly end-to-end, including form validation and showing the confirmation screen",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-22",
+      "summary": "Make the Vitalis logo fully visible and prominent in the header — fix any cropping, sizing, or styling issues making it look ugly",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-23",
+      "summary": "Redesign the admin panel UI to look professional and polished. Add coupon verification: admin can look up a coupon code, verify if it is valid, and mark it as redeemed/closed so it cannot be claimed again",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-27",
+      "summary": "Update the Motoko backend (backend/main.mo) to add a 'status' field to the Submission record type (values: 'active' or 'redeemed'). Add an update function markAsRedeemed(couponCode: Text) : async Bool that sets the status of the matching submission to 'redeemed' and returns true if found, false otherwise. Ensure the existing submitClaim and getSubmissions functions include the status field. Default status for all new submissions is 'active'.",
+      "reqIds": [
+        "REQ-23"
       ],
       "status": "pending"
     }

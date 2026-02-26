@@ -1,137 +1,38 @@
 {
   "kind": "coverage_report",
   "version": "1.0",
-  "generatedAt": "2026-02-26T07:01:00.276Z",
+  "generatedAt": "2026-02-26T07:57:59.831Z",
   "sources": {
     "buildRequest": true,
     "implementationPlan": true
   },
   "requirements": {
-    "total": 7,
-    "implemented": 6,
+    "total": 1,
+    "implemented": 1,
     "items": [
       {
-        "id": "REQ-10",
-        "summary": "Update the weighted reward probability in rewardGenerator.ts to: 90% chance of ₹10, 4% chance of ₹20, 3.9% chance of ₹30, 2% chance of ₹90, and 0.1% chance of ₹100. Remove any other reward amounts.",
+        "id": "REQ-25",
+        "summary": "Diagnose and fix the runtime error thrown when the user clicks the 'Submit' button on the ClaimForm. Inspect the useSubmitClaim hook in useQueries.ts and the ClaimForm component to identify the exact failure point (e.g., missing or undefined actor, incorrect argument shape passed to the backend submitClaim function, type mismatch between frontend payload and Motoko actor method signature). Ensure the mutation is called with all required fields (couponCode, rewardAmount, state, city, feedback, upiId) with correct types, error boundaries are in place, and the error is surfaced to the user with a visible inline message rather than a silent failure or crash.",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/src/utils/rewardGenerator.ts"
-        ],
-        "matchedFiles": [
-          "frontend/src/utils/rewardGenerator.ts"
-        ]
-      },
-      {
-        "id": "REQ-11",
-        "summary": "After the scratch card reward is revealed, display a prominent 'Click to Claim Your Reward' button below the reward amount. Tapping/clicking this button scrolls to or reveals a claim form. The form must contain: a 'State' dropdown or text input, a 'City' text input, a 'Feedback' textarea, and a 'UPI ID' text input. All fields are required. The form must be styled consistently with the premium glassmorphism design theme.",
-        "status": "implemented",
-        "plannedFiles": [
-          "frontend/src/components/ClaimForm.tsx",
-          "frontend/src/components/RewardReveal.tsx",
-          "frontend/src/pages/ScratchPage.tsx"
-        ],
-        "matchedFiles": [
-          "frontend/src/components/ClaimForm.tsx",
-          "frontend/src/components/RewardReveal.tsx",
-          "frontend/src/pages/ScratchPage.tsx"
-        ]
-      },
-      {
-        "id": "REQ-12",
-        "summary": "On claim form submission, save the entry to the Motoko backend actor. Each submission must store: the unique coupon code (VW-XXXX-XXXX), reward amount, state, city, feedback, UPI ID, and a timestamp. Expose a query method to retrieve all submissions (for the admin panel). Expose a query method to retrieve a single submission by coupon code.",
-        "status": "unknown",
-        "plannedFiles": [],
-        "matchedFiles": []
-      },
-      {
-        "id": "REQ-13",
-        "summary": "After the user submits the claim form successfully, hide the form and display a full-screen or overlay animated confirmation notification. The notification must show the message 'Money will be in your account soon!' with a celebration animation (e.g., animated checkmark, ripple/pulse effect, or animated coins/wallet icon). Animate the notification's entrance with a smooth scale-up or slide-up transition. Use brand colors (blue, white, gold).",
-        "status": "implemented",
-        "plannedFiles": [
-          "frontend/src/components/ConfirmationNotification.tsx",
-          "frontend/src/pages/ScratchPage.tsx",
+          "frontend/src/hooks/useQueries.ts",
           "frontend/src/components/ClaimForm.tsx"
         ],
         "matchedFiles": [
-          "frontend/src/components/ConfirmationNotification.tsx",
-          "frontend/src/pages/ScratchPage.tsx",
+          "frontend/src/hooks/useQueries.ts",
           "frontend/src/components/ClaimForm.tsx"
-        ]
-      },
-      {
-        "id": "REQ-14",
-        "summary": "Create a separate Admin Panel page or route accessible via a hidden/discrete link (e.g., '/admin' or a small footer link). The admin panel must: display a table/list of all submitted claim entries (coupon code, reward amount, state, city, UPI ID, feedback, timestamp); allow searching/filtering by coupon code; show the total number of submissions and a breakdown of reward amounts distributed. Protect the admin panel with a simple hardcoded password prompt (e.g., 'vitalis2024'). Style it cleanly with the brand theme.",
-        "status": "implemented",
-        "plannedFiles": [
-          "frontend/src/pages/AdminPanel.tsx",
-          "frontend/src/App.tsx",
-          "frontend/src/components/Footer.tsx"
-        ],
-        "matchedFiles": [
-          "frontend/src/pages/AdminPanel.tsx",
-          "frontend/src/App.tsx",
-          "frontend/src/components/Footer.tsx"
-        ]
-      },
-      {
-        "id": "REQ-8",
-        "summary": "Replace all existing logo/header references with the uploaded Vitalist Water brand logo (vitalis-logo.png). Use it in the header/Logo component at full quality with appropriate sizing. Remove text-only fallbacks where the image is available. Ensure the logo is crisp and prominent at the top of the page.",
-        "status": "implemented",
-        "plannedFiles": [
-          "frontend/src/components/Logo.tsx"
-        ],
-        "matchedFiles": [
-          "frontend/src/components/Logo.tsx"
-        ]
-      },
-      {
-        "id": "REQ-9",
-        "summary": "Overhaul the entire visual design to a premium professional level. Apply a deep ocean-to-light-blue gradient background, elevated glassmorphism card panels with stronger blur and refined borders, high-contrast modern typography using a clean sans-serif font, refined spacing and padding, polished button styles with gradient fills and subtle glow effects, and micro-animations on interactive elements. The overall aesthetic must feel like a premium brand campaign — similar to high-end FMCG product promotions.",
-        "status": "implemented",
-        "plannedFiles": [
-          "frontend/src/index.css",
-          "frontend/tailwind.config.js",
-          "frontend/src/components/ScratchCard.tsx",
-          "frontend/src/components/RewardReveal.tsx",
-          "frontend/src/components/Hero.tsx",
-          "frontend/src/pages/ScratchPage.tsx"
-        ],
-        "matchedFiles": [
-          "frontend/src/index.css",
-          "frontend/tailwind.config.js",
-          "frontend/src/components/RewardReveal.tsx",
-          "frontend/src/components/Hero.tsx",
-          "frontend/src/pages/ScratchPage.tsx"
         ]
       }
     ]
   },
   "changedFiles": [
     "backend/main.mo",
-    "backend/migration.mo",
     "build-request.json",
-    "build-template/README.md",
     "feature_evidence.json",
     "frontend-file-summaries.txt",
     "frontend-implementation-plan.json",
-    "frontend/public/assets/generated/vitalis-logo.dim_300x120.png",
-    "frontend/src/App.tsx",
-    "frontend/src/backend.d.ts",
-    "frontend/src/backend.ts",
     "frontend/src/components/ClaimForm.tsx",
-    "frontend/src/components/ConfirmationNotification.tsx",
-    "frontend/src/components/Footer.tsx",
-    "frontend/src/components/Hero.tsx",
-    "frontend/src/components/Logo.tsx",
-    "frontend/src/components/RewardReveal.tsx",
-    "frontend/src/declarations/backend.did.d.ts",
-    "frontend/src/declarations/backend.did.js",
     "frontend/src/hooks/useQueries.ts",
-    "frontend/src/index.css",
-    "frontend/src/pages/AdminPanel.tsx",
-    "frontend/src/pages/ScratchPage.tsx",
-    "frontend/src/utils/rewardGenerator.ts",
-    "frontend/tailwind.config.js",
     "project_state.json",
     "scratch/component-selection.json",
     "spec.md",

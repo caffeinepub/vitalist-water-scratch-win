@@ -11,6 +11,7 @@ import type { IDL } from '@icp-sdk/core/candid';
 import type { Principal } from '@icp-sdk/core/principal';
 
 export interface Submission {
+  'status' : string,
   'couponCode' : string,
   'rewardAmount' : bigint,
   'city' : string,
@@ -19,17 +20,30 @@ export interface Submission {
   'timestamp' : bigint,
   'upiId' : string,
 }
+export interface UserProfile { 'name' : string }
+export type UserRole = { 'admin' : null } |
+  { 'user' : null } |
+  { 'guest' : null };
 export interface _SERVICE {
+  '_initializeAccessControlWithSecret' : ActorMethod<[string], undefined>,
+  'assignCallerUserRole' : ActorMethod<[Principal, UserRole], undefined>,
   'filterByState' : ActorMethod<[string], Array<Submission>>,
+  'getActiveSubmissions' : ActorMethod<[], Array<Submission>>,
   'getAllSubmissions' : ActorMethod<[], Array<Submission>>,
+  'getCallerUserProfile' : ActorMethod<[], [] | [UserProfile]>,
+  'getCallerUserRole' : ActorMethod<[], UserRole>,
   'getRewardStats' : ActorMethod<[], [bigint, Array<bigint>]>,
-  'getSubmission' : ActorMethod<[string], [] | [Submission]>,
+  'getSubmissionByCode' : ActorMethod<[string], [] | [Submission]>,
+  'getUserProfile' : ActorMethod<[Principal], [] | [UserProfile]>,
+  'isCallerAdmin' : ActorMethod<[], boolean>,
+  'markAsRedeemed' : ActorMethod<[string], undefined>,
+  'saveCallerUserProfile' : ActorMethod<[UserProfile], undefined>,
   'searchByCouponPrefix' : ActorMethod<[string], Array<Submission>>,
   'submitClaim' : ActorMethod<
     [string, bigint, string, string, string, string],
-    boolean
+    undefined
   >,
-  'updateRewardAmount' : ActorMethod<[string, bigint], boolean>,
+  'updateRewardAmount' : ActorMethod<[string, bigint], undefined>,
 }
 export declare const idlService: IDL.ServiceClass;
 export declare const idlInitArgs: IDL.Type[];

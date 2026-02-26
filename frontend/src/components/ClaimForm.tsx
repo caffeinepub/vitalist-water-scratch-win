@@ -1,5 +1,6 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { useSubmitClaim } from '../hooks/useQueries';
+import { Loader2 } from 'lucide-react';
 
 interface ClaimFormProps {
   couponCode: string;
@@ -13,125 +14,152 @@ const INDIAN_STATES = [
   'Kerala', 'Madhya Pradesh', 'Maharashtra', 'Manipur', 'Meghalaya', 'Mizoram',
   'Nagaland', 'Odisha', 'Punjab', 'Rajasthan', 'Sikkim', 'Tamil Nadu',
   'Telangana', 'Tripura', 'Uttar Pradesh', 'Uttarakhand', 'West Bengal',
-  'Delhi', 'Jammu & Kashmir', 'Ladakh', 'Chandigarh', 'Puducherry',
+  'Andaman and Nicobar Islands', 'Chandigarh', 'Dadra and Nagar Haveli and Daman and Diu',
+  'Delhi', 'Jammu and Kashmir', 'Ladakh', 'Lakshadweep', 'Puducherry',
 ];
 
 export default function ClaimForm({ couponCode, rewardAmount, onSuccess }: ClaimFormProps) {
   const [state, setState] = useState('');
   const [city, setCity] = useState('');
-  const [feedback, setFeedback] = useState('');
   const [upiId, setUpiId] = useState('');
-  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [feedback, setFeedback] = useState('');
 
-  const { mutate: submitClaim, isPending, isError, error } = useSubmitClaim();
+  const submitClaimMutation = useSubmitClaim();
 
-  const validate = () => {
-    const newErrors: Record<string, string> = {};
-    if (!state) newErrors.state = 'Please select your state.';
-    if (!city.trim()) newErrors.city = 'Please enter your city.';
-    if (!feedback.trim()) newErrors.feedback = 'Please share your feedback.';
-    if (!upiId.trim()) newErrors.upiId = 'Please enter your UPI ID.';
-    else if (!/^[\w.\-_]{2,256}@[a-zA-Z]{2,64}$/.test(upiId.trim())) {
-      newErrors.upiId = 'Enter a valid UPI ID (e.g. name@upi).';
-    }
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!validate()) return;
-    submitClaim(
-      { couponCode, rewardAmount, state, city: city.trim(), feedback: feedback.trim(), upiId: upiId.trim() },
-      { onSuccess: () => onSuccess() }
+
+    if (!state || !city || !upiId) {
+      return;
+    }
+
+    submitClaimMutation.mutate(
+      {
+        couponCode,
+        rewardAmount,
+        state,
+        city,
+        feedback,
+        upiId,
+      },
+      {
+        onSuccess: () => {
+          onSuccess();
+        },
+        onError: (error: Error) => {
+          // Error is displayed inline via submitClaimMutation.error
+          console.error('Claim submission error:', error.message);
+        },
+      }
     );
   };
 
+  const isSubmitting = submitClaimMutation.isPending;
+  const errorMessage = submitClaimMutation.error?.message;
+
   return (
-    <div className="claim-form-section">
-      <div className="claim-form-card">
-        <div className="claim-form-header">
-          <div className="claim-form-icon">📋</div>
-          <h2 className="claim-form-title">Claim Your ₹{rewardAmount}</h2>
-          <p className="claim-form-subtitle">Fill in your details to receive the money in your account</p>
+    <div id="claim-form" className="claim-form-container glass-card">
+      <div className="claim-form-header">
+        <h2 className="claim-form-title">🎉 Claim Your Reward</h2>
+        <p className="claim-form-subtitle">
+          You won <span className="reward-highlight">₹{rewardAmount}</span>! Fill in your details to receive your reward.
+        </p>
+        <div className="coupon-code-display">
+          <span className="coupon-label">Coupon Code:</span>
+          <span className="coupon-value">{couponCode}</span>
+        </div>
+      </div>
+
+      <form onSubmit={handleSubmit} className="claim-form">
+        <div className="form-group">
+          <label htmlFor="state" className="form-label">
+            State <span className="required">*</span>
+          </label>
+          <select
+            id="state"
+            value={state}
+            onChange={(e) => setState(e.target.value)}
+            className="form-select"
+            required
+            disabled={isSubmitting}
+          >
+            <option value="">Select your state</option>
+            {INDIAN_STATES.map((s) => (
+              <option key={s} value={s}>
+                {s}
+              </option>
+            ))}
+          </select>
         </div>
 
-        <form onSubmit={handleSubmit} className="claim-form-body" noValidate>
-          {/* State */}
-          <div className="form-field">
-            <label className="form-label">State <span className="form-required">*</span></label>
-            <select
-              className={`form-select ${errors.state ? 'form-input-error' : ''}`}
-              value={state}
-              onChange={(e) => { setState(e.target.value); setErrors(p => ({ ...p, state: '' })); }}
-              disabled={isPending}
-            >
-              <option value="">— Select your state —</option>
-              {INDIAN_STATES.map(s => <option key={s} value={s}>{s}</option>)}
-            </select>
-            {errors.state && <span className="form-error-msg">{errors.state}</span>}
-          </div>
+        <div className="form-group">
+          <label htmlFor="city" className="form-label">
+            City <span className="required">*</span>
+          </label>
+          <input
+            id="city"
+            type="text"
+            value={city}
+            onChange={(e) => setCity(e.target.value)}
+            placeholder="Enter your city"
+            className="form-input"
+            required
+            disabled={isSubmitting}
+          />
+        </div>
 
-          {/* City */}
-          <div className="form-field">
-            <label className="form-label">City <span className="form-required">*</span></label>
-            <input
-              type="text"
-              className={`form-input ${errors.city ? 'form-input-error' : ''}`}
-              placeholder="Enter your city"
-              value={city}
-              onChange={(e) => { setCity(e.target.value); setErrors(p => ({ ...p, city: '' })); }}
-              disabled={isPending}
-            />
-            {errors.city && <span className="form-error-msg">{errors.city}</span>}
-          </div>
+        <div className="form-group">
+          <label htmlFor="upiId" className="form-label">
+            UPI ID <span className="required">*</span>
+          </label>
+          <input
+            id="upiId"
+            type="text"
+            value={upiId}
+            onChange={(e) => setUpiId(e.target.value)}
+            placeholder="e.g. yourname@upi"
+            className="form-input"
+            required
+            disabled={isSubmitting}
+          />
+        </div>
 
-          {/* UPI ID */}
-          <div className="form-field">
-            <label className="form-label">UPI ID <span className="form-required">*</span></label>
-            <input
-              type="text"
-              className={`form-input ${errors.upiId ? 'form-input-error' : ''}`}
-              placeholder="yourname@upi"
-              value={upiId}
-              onChange={(e) => { setUpiId(e.target.value); setErrors(p => ({ ...p, upiId: '' })); }}
-              disabled={isPending}
-            />
-            {errors.upiId && <span className="form-error-msg">{errors.upiId}</span>}
-          </div>
+        <div className="form-group">
+          <label htmlFor="feedback" className="form-label">
+            Feedback <span className="optional">(optional)</span>
+          </label>
+          <textarea
+            id="feedback"
+            value={feedback}
+            onChange={(e) => setFeedback(e.target.value)}
+            placeholder="Share your experience with Vitalis Water..."
+            className="form-textarea"
+            rows={3}
+            disabled={isSubmitting}
+          />
+        </div>
 
-          {/* Feedback */}
-          <div className="form-field">
-            <label className="form-label">Feedback <span className="form-required">*</span></label>
-            <textarea
-              className={`form-textarea ${errors.feedback ? 'form-input-error' : ''}`}
-              placeholder="How was your experience with Vitalis Water?"
-              rows={3}
-              value={feedback}
-              onChange={(e) => { setFeedback(e.target.value); setErrors(p => ({ ...p, feedback: '' })); }}
-              disabled={isPending}
-            />
-            {errors.feedback && <span className="form-error-msg">{errors.feedback}</span>}
+        {errorMessage && (
+          <div className="form-submit-error">
+            <span>⚠️ {errorMessage}</span>
           </div>
+        )}
 
-          {isError && (
-            <div className="form-server-error">
-              ⚠️ {error?.message || 'Something went wrong. Please try again.'}
-            </div>
+        <button
+          type="submit"
+          className="form-submit-btn"
+          disabled={isSubmitting || !state || !city || !upiId}
+        >
+          {isSubmitting ? (
+            <>
+              <Loader2 className="inline-block w-4 h-4 mr-2 animate-spin" />
+              Submitting...
+            </>
+          ) : (
+            'Submit Claim'
           )}
-
-          <button type="submit" className="form-submit-btn" disabled={isPending}>
-            {isPending ? (
-              <span className="form-submit-loading">
-                <span className="form-spinner" />
-                Submitting…
-              </span>
-            ) : (
-              <>💸 Submit &amp; Claim ₹{rewardAmount}</>
-            )}
-          </button>
-        </form>
-      </div>
+        </button>
+      </form>
     </div>
   );
 }

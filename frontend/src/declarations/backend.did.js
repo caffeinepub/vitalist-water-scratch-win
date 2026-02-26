@@ -8,7 +8,13 @@
 
 import { IDL } from '@icp-sdk/core/candid';
 
+export const UserRole = IDL.Variant({
+  'admin' : IDL.Null,
+  'user' : IDL.Null,
+  'guest' : IDL.Null,
+});
 export const Submission = IDL.Record({
+  'status' : IDL.Text,
   'couponCode' : IDL.Text,
   'rewardAmount' : IDL.Nat,
   'city' : IDL.Text,
@@ -17,12 +23,30 @@ export const Submission = IDL.Record({
   'timestamp' : IDL.Int,
   'upiId' : IDL.Text,
 });
+export const UserProfile = IDL.Record({ 'name' : IDL.Text });
 
 export const idlService = IDL.Service({
+  '_initializeAccessControlWithSecret' : IDL.Func([IDL.Text], [], []),
+  'assignCallerUserRole' : IDL.Func([IDL.Principal, UserRole], [], []),
   'filterByState' : IDL.Func([IDL.Text], [IDL.Vec(Submission)], ['query']),
+  'getActiveSubmissions' : IDL.Func([], [IDL.Vec(Submission)], ['query']),
   'getAllSubmissions' : IDL.Func([], [IDL.Vec(Submission)], ['query']),
+  'getCallerUserProfile' : IDL.Func([], [IDL.Opt(UserProfile)], ['query']),
+  'getCallerUserRole' : IDL.Func([], [UserRole], ['query']),
   'getRewardStats' : IDL.Func([], [IDL.Nat, IDL.Vec(IDL.Nat)], ['query']),
-  'getSubmission' : IDL.Func([IDL.Text], [IDL.Opt(Submission)], ['query']),
+  'getSubmissionByCode' : IDL.Func(
+      [IDL.Text],
+      [IDL.Opt(Submission)],
+      ['query'],
+    ),
+  'getUserProfile' : IDL.Func(
+      [IDL.Principal],
+      [IDL.Opt(UserProfile)],
+      ['query'],
+    ),
+  'isCallerAdmin' : IDL.Func([], [IDL.Bool], ['query']),
+  'markAsRedeemed' : IDL.Func([IDL.Text], [], []),
+  'saveCallerUserProfile' : IDL.Func([UserProfile], [], []),
   'searchByCouponPrefix' : IDL.Func(
       [IDL.Text],
       [IDL.Vec(Submission)],
@@ -30,16 +54,22 @@ export const idlService = IDL.Service({
     ),
   'submitClaim' : IDL.Func(
       [IDL.Text, IDL.Nat, IDL.Text, IDL.Text, IDL.Text, IDL.Text],
-      [IDL.Bool],
+      [],
       [],
     ),
-  'updateRewardAmount' : IDL.Func([IDL.Text, IDL.Nat], [IDL.Bool], []),
+  'updateRewardAmount' : IDL.Func([IDL.Text, IDL.Nat], [], []),
 });
 
 export const idlInitArgs = [];
 
 export const idlFactory = ({ IDL }) => {
+  const UserRole = IDL.Variant({
+    'admin' : IDL.Null,
+    'user' : IDL.Null,
+    'guest' : IDL.Null,
+  });
   const Submission = IDL.Record({
+    'status' : IDL.Text,
     'couponCode' : IDL.Text,
     'rewardAmount' : IDL.Nat,
     'city' : IDL.Text,
@@ -48,12 +78,30 @@ export const idlFactory = ({ IDL }) => {
     'timestamp' : IDL.Int,
     'upiId' : IDL.Text,
   });
+  const UserProfile = IDL.Record({ 'name' : IDL.Text });
   
   return IDL.Service({
+    '_initializeAccessControlWithSecret' : IDL.Func([IDL.Text], [], []),
+    'assignCallerUserRole' : IDL.Func([IDL.Principal, UserRole], [], []),
     'filterByState' : IDL.Func([IDL.Text], [IDL.Vec(Submission)], ['query']),
+    'getActiveSubmissions' : IDL.Func([], [IDL.Vec(Submission)], ['query']),
     'getAllSubmissions' : IDL.Func([], [IDL.Vec(Submission)], ['query']),
+    'getCallerUserProfile' : IDL.Func([], [IDL.Opt(UserProfile)], ['query']),
+    'getCallerUserRole' : IDL.Func([], [UserRole], ['query']),
     'getRewardStats' : IDL.Func([], [IDL.Nat, IDL.Vec(IDL.Nat)], ['query']),
-    'getSubmission' : IDL.Func([IDL.Text], [IDL.Opt(Submission)], ['query']),
+    'getSubmissionByCode' : IDL.Func(
+        [IDL.Text],
+        [IDL.Opt(Submission)],
+        ['query'],
+      ),
+    'getUserProfile' : IDL.Func(
+        [IDL.Principal],
+        [IDL.Opt(UserProfile)],
+        ['query'],
+      ),
+    'isCallerAdmin' : IDL.Func([], [IDL.Bool], ['query']),
+    'markAsRedeemed' : IDL.Func([IDL.Text], [], []),
+    'saveCallerUserProfile' : IDL.Func([UserProfile], [], []),
     'searchByCouponPrefix' : IDL.Func(
         [IDL.Text],
         [IDL.Vec(Submission)],
@@ -61,10 +109,10 @@ export const idlFactory = ({ IDL }) => {
       ),
     'submitClaim' : IDL.Func(
         [IDL.Text, IDL.Nat, IDL.Text, IDL.Text, IDL.Text, IDL.Text],
-        [IDL.Bool],
+        [],
         [],
       ),
-    'updateRewardAmount' : IDL.Func([IDL.Text, IDL.Nat], [IDL.Bool], []),
+    'updateRewardAmount' : IDL.Func([IDL.Text, IDL.Nat], [], []),
   });
 };
 

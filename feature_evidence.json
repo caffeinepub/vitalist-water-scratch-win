@@ -2,120 +2,22 @@
   "kind": "feature_evidence_report",
   "features": [
     {
-      "featureId": "feature-replace-all-existing-logo-header-references-with-the-uploaded-vitalist-water-brand-logo-vitalis-logo-png-use-it-in-the-header-logo-component-at-full-quality-with-appropriate-sizing-remove-text-only-fallbacks-where-the-image-is-available-ensure-the-logo-is-crisp-and-prominent-at-the-top-of-the-page",
-      "featureTitle": "Replace all existing logo/header references with the uploaded Vitalist Water brand logo (vitalis-logo.png). Use it in the header/Logo component at full quality with appropriate sizing. Remove text-only fallbacks where the image is available. Ensure the logo is crisp and prominent at the top of the page.",
-      "files": [
-        "frontend/src/components/Logo.tsx"
-      ],
-      "components": [
-        "core-infrastructure@1.0.2",
-        "shadcn-ui@1.0.0",
-        "build-template-react@1.0.0",
-        "initial-app@1.0.0",
-        "github-export-icp-cli@1.0.0"
-      ],
-      "testIds": [
-        "REQ-8"
-      ],
-      "confidence": "high"
-    },
-    {
-      "featureId": "feature-overhaul-the-entire-visual-design-to-a-premium-professional-level-apply-a-deep-ocean-to-light-blue-gradient-background-elevated-glassmorphism-card-panels-with-stronger-blur-and-refined-borders-high-contrast-modern-typography-using-a-clean-sans-serif-font-refined-spacing-and-padding-polished-button-styles-with-gradient-fills-and-subtle-glow-effects-and-micro-animations-on-interactive-elements-the-overall-aesthetic-must-feel-like-a-premium-brand-campaign-similar-to-high-end-fmcg-product-promotions",
-      "featureTitle": "Overhaul the entire visual design to a premium professional level. Apply a deep ocean-to-light-blue gradient background, elevated glassmorphism card panels with stronger blur and refined borders, high-contrast modern typography using a clean sans-serif font, refined spacing and padding, polished button styles with gradient fills and subtle glow effects, and micro-animations on interactive elements. The overall aesthetic must feel like a premium brand campaign — similar to high-end FMCG product promotions.",
-      "files": [
-        "frontend/src/components/Hero.tsx",
-        "frontend/src/components/RewardReveal.tsx",
-        "frontend/src/index.css",
-        "frontend/src/pages/ScratchPage.tsx",
-        "frontend/tailwind.config.js"
-      ],
-      "components": [
-        "core-infrastructure@1.0.2",
-        "shadcn-ui@1.0.0",
-        "build-template-react@1.0.0",
-        "initial-app@1.0.0",
-        "github-export-icp-cli@1.0.0"
-      ],
-      "testIds": [
-        "REQ-9"
-      ],
-      "confidence": "high"
-    },
-    {
-      "featureId": "feature-update-the-weighted-reward-probability-in-rewardgenerator-ts-to-90-chance-of-10-4-chance-of-20-3-9-chance-of-30-2-chance-of-90-and-0-1-chance-of-100-remove-any-other-reward-amounts",
-      "featureTitle": "Update the weighted reward probability in rewardGenerator.ts to: 90% chance of ₹10, 4% chance of ₹20, 3.9% chance of ₹30, 2% chance of ₹90, and 0.1% chance of ₹100. Remove any other reward amounts.",
-      "files": [
-        "frontend/src/utils/rewardGenerator.ts"
-      ],
-      "components": [
-        "core-infrastructure@1.0.2",
-        "shadcn-ui@1.0.0",
-        "build-template-react@1.0.0",
-        "initial-app@1.0.0",
-        "github-export-icp-cli@1.0.0"
-      ],
-      "testIds": [
-        "REQ-10"
-      ],
-      "confidence": "high"
-    },
-    {
-      "featureId": "feature-after-the-scratch-card-reward-is-revealed-display-a-prominent-click-to-claim-your-reward-button-below-the-reward-amount-tapping-clicking-this-button-scrolls-to-or-reveals-a-claim-form-the-form-must-contain-a-state-dropdown-or-text-input-a-city-text-input-a-feedback-textarea-and-a-upi-id-text-input-all-fields-are-required-the-form-must-be-styled-consistently-with-the-premium-glassmorphism-design-theme",
-      "featureTitle": "After the scratch card reward is revealed, display a prominent 'Click to Claim Your Reward' button below the reward amount. Tapping/clicking this button scrolls to or reveals a claim form. The form must contain: a 'State' dropdown or text input, a 'City' text input, a 'Feedback' textarea, and a 'UPI ID' text input. All fields are required. The form must be styled consistently with the premium glassmorphism design theme.",
+      "featureId": "feature-diagnose-and-fix-the-runtime-error-thrown-when-the-user-clicks-the-submit-button-on-the-claimform-inspect-the-usesubmitclaim-hook-in-usequeries-ts-and-the-claimform-component-to-identify-the-exact-failure-point-e-g-missing-or-undefined-actor-incorrect-argument-shape-passed-to-the-backend-submitclaim-function-type-mismatch-between-frontend-payload-and-motoko-actor-method-signature-ensure-the-mutation-is-called-with-all-required-fields-couponcode-rewardamount-state-city-feedback-upiid-with-correct-types-error-boundaries-are-in-place-and-the-error-is-surfaced-to-the-user-with-a-visible-inline-message-rather-than-a-silent-failure-or-crash",
+      "featureTitle": "Diagnose and fix the runtime error thrown when the user clicks the 'Submit' button on the ClaimForm. Inspect the useSubmitClaim hook in useQueries.ts and the ClaimForm component to identify the exact failure point (e.g., missing or undefined actor, incorrect argument shape passed to the backend submitClaim function, type mismatch between frontend payload and Motoko actor method signature). Ensure the mutation is called with all required fields (couponCode, rewardAmount, state, city, feedback, upiId) with correct types, error boundaries are in place, and the error is surfaced to the user with a visible inline message rather than a silent failure or crash.",
       "files": [
         "frontend/src/components/ClaimForm.tsx",
-        "frontend/src/components/RewardReveal.tsx",
-        "frontend/src/pages/ScratchPage.tsx"
+        "frontend/src/hooks/useQueries.ts"
       ],
       "components": [
         "core-infrastructure@1.0.2",
         "shadcn-ui@1.0.0",
         "build-template-react@1.0.0",
         "initial-app@1.0.0",
-        "github-export-icp-cli@1.0.0"
+        "github-export-icp-cli@1.0.0",
+        "authorization@4.0.0"
       ],
       "testIds": [
-        "REQ-11"
-      ],
-      "confidence": "high"
-    },
-    {
-      "featureId": "feature-after-the-user-submits-the-claim-form-successfully-hide-the-form-and-display-a-full-screen-or-overlay-animated-confirmation-notification-the-notification-must-show-the-message-money-will-be-in-your-account-soon-with-a-celebration-animation-e-g-animated-checkmark-ripple-pulse-effect-or-animated-coins-wallet-icon-animate-the-notification-s-entrance-with-a-smooth-scale-up-or-slide-up-transition-use-brand-colors-blue-white-gold",
-      "featureTitle": "After the user submits the claim form successfully, hide the form and display a full-screen or overlay animated confirmation notification. The notification must show the message 'Money will be in your account soon!' with a celebration animation (e.g., animated checkmark, ripple/pulse effect, or animated coins/wallet icon). Animate the notification's entrance with a smooth scale-up or slide-up transition. Use brand colors (blue, white, gold).",
-      "files": [
-        "frontend/src/components/ClaimForm.tsx",
-        "frontend/src/components/ConfirmationNotification.tsx",
-        "frontend/src/pages/ScratchPage.tsx"
-      ],
-      "components": [
-        "core-infrastructure@1.0.2",
-        "shadcn-ui@1.0.0",
-        "build-template-react@1.0.0",
-        "initial-app@1.0.0",
-        "github-export-icp-cli@1.0.0"
-      ],
-      "testIds": [
-        "REQ-13"
-      ],
-      "confidence": "high"
-    },
-    {
-      "featureId": "feature-create-a-separate-admin-panel-page-or-route-accessible-via-a-hidden-discrete-link-e-g-admin-or-a-small-footer-link-the-admin-panel-must-display-a-table-list-of-all-submitted-claim-entries-coupon-code-reward-amount-state-city-upi-id-feedback-timestamp-allow-searching-filtering-by-coupon-code-show-the-total-number-of-submissions-and-a-breakdown-of-reward-amounts-distributed-protect-the-admin-panel-with-a-simple-hardcoded-password-prompt-e-g-vitalis2024-style-it-cleanly-with-the-brand-theme",
-      "featureTitle": "Create a separate Admin Panel page or route accessible via a hidden/discrete link (e.g., '/admin' or a small footer link). The admin panel must: display a table/list of all submitted claim entries (coupon code, reward amount, state, city, UPI ID, feedback, timestamp); allow searching/filtering by coupon code; show the total number of submissions and a breakdown of reward amounts distributed. Protect the admin panel with a simple hardcoded password prompt (e.g., 'vitalis2024'). Style it cleanly with the brand theme.",
-      "files": [
-        "frontend/src/App.tsx",
-        "frontend/src/components/Footer.tsx",
-        "frontend/src/pages/AdminPanel.tsx"
-      ],
-      "components": [
-        "core-infrastructure@1.0.2",
-        "shadcn-ui@1.0.0",
-        "build-template-react@1.0.0",
-        "initial-app@1.0.0",
-        "github-export-icp-cli@1.0.0"
-      ],
-      "testIds": [
-        "REQ-14"
+        "REQ-25"
       ],
       "confidence": "high"
     }
