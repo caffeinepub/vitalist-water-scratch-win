@@ -1,0 +1,170 @@
+{
+  "kind": "implementation_plan",
+  "version": "1.0",
+  "title": "Professional redesign with logo, claim form, confirmation animation, and admin panel",
+  "requirements": [
+    {
+      "id": "REQ-8",
+      "summary": "Replace all existing logo/header references with the uploaded Vitalist Water brand logo (vitalis-logo.png). Use it in the header/Logo component at full quality with appropriate sizing. Remove text-only fallbacks where the image is available. Ensure the logo is crisp and prominent at the top of the page.",
+      "acceptanceCriteria": [
+        "The Vitalist Water logo image (vitalis-logo.png) is displayed in the header section",
+        "Logo is correctly sized and not pixelated on mobile screens",
+        "Logo appears professional and prominent at the top of the page"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/components/Logo.tsx",
+          "operation": "modify",
+          "description": "Replace the logo image source with the uploaded Vitalist Water brand logo at frontend/public/assets/generated/vitalis-logo.dim_320x120.png. Update the img element to use this asset path. Remove the water drop emoji and text-only fallback. Apply appropriate sizing (e.g., max-height and auto width) to ensure the logo is crisp and prominent on all screen sizes, including mobile. Ensure alt text is descriptive."
+        }
+      ]
+    },
+    {
+      "id": "REQ-9",
+      "summary": "Overhaul the entire visual design to a premium professional level. Apply a deep ocean-to-light-blue gradient background, elevated glassmorphism card panels with stronger blur and refined borders, high-contrast modern typography using a clean sans-serif font, refined spacing and padding, polished button styles with gradient fills and subtle glow effects, and micro-animations on interactive elements. The overall aesthetic must feel like a premium brand campaign — similar to high-end FMCG product promotions.",
+      "acceptanceCriteria": [
+        "Visual design is noticeably more polished and premium compared to the previous version",
+        "All buttons have gradient fills with hover/active glow states",
+        "Card panels have strong glassmorphism with refined blur and border",
+        "Typography is clean, modern, and professional",
+        "Overall feel matches a premium FMCG brand campaign"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/index.css",
+          "operation": "modify",
+          "description": "Overhaul the global stylesheet to implement a premium professional design system. Replace the existing background gradient with a deep ocean-to-light-blue gradient (e.g., from dark blue #003d5c to light blue #a0d8ef). Strengthen the glassmorphism effect on card panels by increasing backdrop-blur values (e.g., backdrop-blur-xl or higher), adding refined border styles (e.g., thin white/translucent borders), and enhancing shadow depth. Update button styles to include gradient fills (e.g., blue-to-teal or gold accents) with hover/active glow effects using box-shadow. Refine typography by setting a clean modern sans-serif font (e.g., Inter, Outfit, or system-ui) as the default font-family. Increase spacing and padding values for a more spacious, premium feel. Add micro-animation utilities for interactive elements (e.g., smooth transitions on hover, scale transforms). Ensure all color tokens and design variables support a high-end FMCG brand aesthetic with high contrast and polished finishes."
+        },
+        {
+          "path": "frontend/tailwind.config.js",
+          "operation": "modify",
+          "description": "Extend the Tailwind configuration to support the premium design overhaul. Add custom font-family definitions for a clean modern sans-serif (e.g., Inter, Outfit, or system-ui). Define custom gradient color stops for deep ocean-to-light-blue backgrounds. Add custom box-shadow utilities for glow effects on buttons and cards. Extend animation keyframes for micro-interactions (e.g., smooth scale-up, fade-in, pulse). Ensure all custom utilities align with the premium FMCG brand aesthetic."
+        },
+        {
+          "path": "frontend/src/components/ScratchCard.tsx",
+          "operation": "modify",
+          "description": "Update the ScratchCard component to use the enhanced glassmorphism card styling. Apply stronger backdrop-blur, refined borders, and elevated shadow effects from the updated global stylesheet. Ensure the card feels premium and polished, consistent with the high-end FMCG brand campaign aesthetic. Apply micro-animations on hover or interaction if appropriate."
+        },
+        {
+          "path": "frontend/src/components/RewardReveal.tsx",
+          "operation": "modify",
+          "description": "Update the RewardReveal component to use the enhanced glassmorphism card styling and premium typography. Apply stronger backdrop-blur, refined borders, and elevated shadow effects. Ensure button styles use gradient fills with glow effects on hover. Make the reward amount display high-contrast and prominent using the updated typography. Ensure the overall look is polished and premium."
+        },
+        {
+          "path": "frontend/src/components/Hero.tsx",
+          "operation": "modify",
+          "description": "Update the Hero component to use the enhanced premium typography and spacing. Apply refined padding and spacing for a more spacious feel. Ensure the tagline and subtitle are rendered with high-contrast modern typography. Apply micro-animations on load or scroll if appropriate. Ensure the component feels consistent with the premium FMCG brand campaign aesthetic."
+        },
+        {
+          "path": "frontend/src/pages/ScratchPage.tsx",
+          "operation": "modify",
+          "description": "Update the ScratchPage component to ensure the overall page layout uses the new deep ocean-to-light-blue gradient background and premium spacing. Ensure all child components (Hero, ScratchCard, RewardReveal) are visually cohesive with the enhanced design system. Apply refined padding and margins for a premium feel. Ensure the page feels like a high-end brand campaign."
+        }
+      ]
+    },
+    {
+      "id": "REQ-10",
+      "summary": "Update the weighted reward probability in rewardGenerator.ts to: 90% chance of ₹10, 4% chance of ₹20, 3.9% chance of ₹30, 2% chance of ₹90, and 0.1% chance of ₹100. Remove any other reward amounts.",
+      "acceptanceCriteria": [
+        "Reward amounts are only: ₹10, ₹20, ₹30, ₹90, ₹100",
+        "Over a large sample (~10,000), ₹10 appears ~90% of the time",
+        "₹20 appears ~4% of the time",
+        "₹30 appears ~3.9% of the time",
+        "₹90 appears ~2% of the time",
+        "₹100 appears ~0.1% of the time"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/utils/rewardGenerator.ts",
+          "operation": "modify",
+          "description": "Replace the existing reward generation logic with a weighted probability system. Define an array of reward objects with amounts [10, 20, 30, 90, 100] and corresponding cumulative probabilities [0.90, 0.94, 0.979, 0.999, 1.0]. Generate a random number between 0 and 1, then iterate through the cumulative probabilities to select the matching reward. Remove any other reward amounts. Ensure the logic produces: ₹10 ~90% of the time, ₹20 ~4%, ₹30 ~3.9%, ₹90 ~2%, and ₹100 ~0.1%. Test the distribution over a large sample to verify correctness."
+        }
+      ]
+    },
+    {
+      "id": "REQ-11",
+      "summary": "After the scratch card reward is revealed, display a prominent 'Click to Claim Your Reward' button below the reward amount. Tapping/clicking this button scrolls to or reveals a claim form. The form must contain: a 'State' dropdown or text input, a 'City' text input, a 'Feedback' textarea, and a 'UPI ID' text input. All fields are required. The form must be styled consistently with the premium glassmorphism design theme.",
+      "acceptanceCriteria": [
+        "A 'Click to Claim Your Reward' button appears after the reward is revealed",
+        "Clicking the button reveals/scrolls to the claim form",
+        "Form contains State, City, Feedback, and UPI ID fields",
+        "All fields are required and validated before submission",
+        "Form is styled with the glassmorphism design theme"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/components/ClaimForm.tsx",
+          "operation": "create",
+          "description": "Create a new ClaimForm component that renders a glassmorphism-styled form with four required fields: State (text input or dropdown), City (text input), Feedback (textarea), and UPI ID (text input). Apply premium glassmorphism styling (backdrop-blur, refined borders, elevated shadows) consistent with the enhanced design system. Include a submit button styled with gradient fills and glow effects. Implement client-side validation to ensure all fields are filled before submission. On submission, call a handler prop that accepts the form data. Use React state to manage form values and validation errors. Ensure the form is visually polished and matches the premium FMCG brand aesthetic."
+        },
+        {
+          "path": "frontend/src/components/RewardReveal.tsx",
+          "operation": "modify",
+          "description": "Add a prominent 'Click to Claim Your Reward' button below the reward amount display. Style the button with gradient fills and glow effects consistent with the premium design. On click, trigger a callback prop to reveal or scroll to the claim form. Ensure the button is visually prominent and matches the enhanced design system."
+        },
+        {
+          "path": "frontend/src/pages/ScratchPage.tsx",
+          "operation": "modify",
+          "description": "Add state to track whether the claim form should be visible. When the 'Click to Claim Your Reward' button is clicked in RewardReveal, update this state to show the ClaimForm component. Conditionally render the ClaimForm below the RewardReveal when visible. Implement smooth scrolling to the form using scrollIntoView or a ref. Pass the coupon code and reward amount to the ClaimForm for submission. Ensure the layout remains visually cohesive with the premium design."
+        }
+      ]
+    },
+    {
+      "id": "REQ-13",
+      "summary": "After the user submits the claim form successfully, hide the form and display a full-screen or overlay animated confirmation notification. The notification must show the message 'Money will be in your account soon!' with a celebration animation (e.g., animated checkmark, ripple/pulse effect, or animated coins/wallet icon). Animate the notification's entrance with a smooth scale-up or slide-up transition. Use brand colors (blue, white, gold).",
+      "acceptanceCriteria": [
+        "After form submission, the form is hidden and a confirmation notification appears",
+        "Notification displays 'Money will be in your account soon!' text prominently",
+        "Notification has an animated entrance (scale-up or slide-up)",
+        "An animated icon (checkmark, coins, or wallet) is displayed",
+        "Notification uses brand colors: blue, white, gold"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/components/ConfirmationNotification.tsx",
+          "operation": "create",
+          "description": "Create a new ConfirmationNotification component that renders a full-screen or overlay notification with a glassmorphism card. Display the message 'Money will be in your account soon!' prominently in high-contrast typography. Include a celebration animation using an animated icon (e.g., animated checkmark with a ripple/pulse effect, or animated coins/wallet icon). Animate the notification's entrance with a smooth scale-up or slide-up transition using CSS animations or Framer Motion. Use brand colors: deep blue, white, and gold accents. Ensure the notification feels premium and polished, consistent with the FMCG brand aesthetic. The component should accept an onClose callback to dismiss the notification after a timeout or user interaction."
+        },
+        {
+          "path": "frontend/src/pages/ScratchPage.tsx",
+          "operation": "modify",
+          "description": "Add state to track whether the claim form has been successfully submitted and whether the confirmation notification should be visible. When the ClaimForm is submitted successfully (after calling the backend submitClaim method), hide the ClaimForm and show the ConfirmationNotification component. Pass an onClose callback to the notification to dismiss it after a timeout (e.g., 5 seconds) or user interaction. Ensure the notification overlays the page content and is visually prominent. After the notification is dismissed, optionally reset the scratch card state or provide a way to start over."
+        },
+        {
+          "path": "frontend/src/components/ClaimForm.tsx",
+          "operation": "modify",
+          "description": "Update the ClaimForm component to call the backend submitClaim method from the actor hook when the form is submitted. Pass the coupon code, reward amount, state, city, feedback, and UPI ID to the backend. On successful submission, invoke a success callback prop to trigger the confirmation notification. On error, display an error message inline in the form. Ensure the form is disabled during submission to prevent duplicate requests. Use the useActor hook to access the backend actor. Handle loading and error states gracefully."
+        }
+      ]
+    },
+    {
+      "id": "REQ-14",
+      "summary": "Create a separate Admin Panel page or route accessible via a hidden/discrete link (e.g., '/admin' or a small footer link). The admin panel must: display a table/list of all submitted claim entries (coupon code, reward amount, state, city, UPI ID, feedback, timestamp); allow searching/filtering by coupon code; show the total number of submissions and a breakdown of reward amounts distributed. Protect the admin panel with a simple hardcoded password prompt (e.g., 'vitalis2024'). Style it cleanly with the brand theme.",
+      "acceptanceCriteria": [
+        "Admin panel is accessible via a discrete route or link",
+        "Admin panel is password-protected with a hardcoded password",
+        "Displays all submitted claims in a table with coupon code, reward, state, city, UPI ID, feedback, and timestamp",
+        "Supports searching or filtering by coupon code",
+        "Shows total submission count and reward amount breakdown",
+        "Styled consistently with the brand theme"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/pages/AdminPanel.tsx",
+          "operation": "create",
+          "description": "Create a new AdminPanel page component that renders a password-protected admin interface. On mount, prompt the user for a password using a simple modal or inline form. Compare the entered password to the hardcoded value 'vitalis2024'. If correct, reveal the admin dashboard. If incorrect, show an error message and keep the dashboard hidden. The dashboard must display: (1) A table or list of all submitted claim entries fetched via the backend getAllSubmissions method, showing coupon code, reward amount, state, city, UPI ID, feedback, and timestamp. (2) A search input to filter the table by coupon code (using the searchByCouponPrefix backend method or client-side filtering). (3) A summary section showing the total number of submissions and a breakdown of reward amounts distributed (e.g., count of each reward tier, fetched via getRewardStats or calculated client-side). Style the admin panel with the premium glassmorphism design theme (backdrop-blur cards, refined borders, elevated shadows, premium typography). Ensure the table is responsive and visually clean. Use the useActor hook to access the backend actor and React Query for data fetching."
+        },
+        {
+          "path": "frontend/src/App.tsx",
+          "operation": "modify",
+          "description": "Replace the single ScratchPage render with a simple client-side router (e.g., using window.location.pathname or a lightweight routing library like wouter or react-router-dom if already available). Define two routes: the root path '/' renders ScratchPage, and the '/admin' path renders AdminPanel. Ensure the app still renders ScratchPage by default at '/'."
+        },
+        {
+          "path": "frontend/src/components/Footer.tsx",
+          "operation": "modify",
+          "description": "Add a small, discrete link to the admin panel in the footer. The link text should be subtle (e.g., 'Admin' or a small icon) and styled to blend with the footer design. The link should navigate to the '/admin' route. Ensure the link does not draw attention from regular users but is discoverable for administrators."
+        }
+      ]
+    }
+  ]
+}

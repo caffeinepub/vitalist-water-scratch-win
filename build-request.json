@@ -1,0 +1,172 @@
+{
+  "kind": "build_request",
+  "title": "Professional redesign with logo, claim form, confirmation animation, and admin panel",
+  "projectName": "Vitalist Water Scratch & Win",
+  "priority": "high",
+  "requirements": [
+    {
+      "id": "REQ-8",
+      "text": "Replace all existing logo/header references with the uploaded Vitalist Water brand logo (vitalis-logo.png). Use it in the header/Logo component at full quality with appropriate sizing. Remove text-only fallbacks where the image is available. Ensure the logo is crisp and prominent at the top of the page.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-3"
+        ],
+        "quotes": [
+          "USE THIS LOGO",
+          "ALSO ITS MAY LOOK BEST AND HERE IS THE LOGO"
+        ]
+      },
+      "acceptanceCriteria": [
+        "The Vitalist Water logo image (vitalis-logo.png) is displayed in the header section",
+        "Logo is correctly sized and not pixelated on mobile screens",
+        "Logo appears professional and prominent at the top of the page"
+      ]
+    },
+    {
+      "id": "REQ-9",
+      "text": "Overhaul the entire visual design to a premium professional level. Apply a deep ocean-to-light-blue gradient background, elevated glassmorphism card panels with stronger blur and refined borders, high-contrast modern typography using a clean sans-serif font, refined spacing and padding, polished button styles with gradient fills and subtle glow effects, and micro-animations on interactive elements. The overall aesthetic must feel like a premium brand campaign — similar to high-end FMCG product promotions.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-3"
+        ],
+        "quotes": [
+          "MAKE IT MORE BEST LIKE A PROFESIONAL",
+          "ALSO ITS MAY LOOK BEST"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Visual design is noticeably more polished and premium compared to the previous version",
+        "All buttons have gradient fills with hover/active glow states",
+        "Card panels have strong glassmorphism with refined blur and border",
+        "Typography is clean, modern, and professional",
+        "Overall feel matches a premium FMCG brand campaign"
+      ]
+    },
+    {
+      "id": "REQ-10",
+      "text": "Update the weighted reward probability in rewardGenerator.ts to: 90% chance of ₹10, 4% chance of ₹20, 3.9% chance of ₹30, 2% chance of ₹90, and 0.1% chance of ₹100. Remove any other reward amounts.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-3"
+        ],
+        "quotes": [
+          "90 PERCNTAGE OF TIME ITS 10 RUPPES",
+          "0.1 PERCENTAGE 100",
+          "2 PERCENTAGE OF TIME 90",
+          "4 PERCENTAGE 20 RUPEES OTHERS 30 RUPPES"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Reward amounts are only: ₹10, ₹20, ₹30, ₹90, ₹100",
+        "Over a large sample (~10,000), ₹10 appears ~90% of the time",
+        "₹20 appears ~4% of the time",
+        "₹30 appears ~3.9% of the time",
+        "₹90 appears ~2% of the time",
+        "₹100 appears ~0.1% of the time"
+      ]
+    },
+    {
+      "id": "REQ-11",
+      "text": "After the scratch card reward is revealed, display a prominent 'Click to Claim Your Reward' button below the reward amount. Tapping/clicking this button scrolls to or reveals a claim form. The form must contain: a 'State' dropdown or text input, a 'City' text input, a 'Feedback' textarea, and a 'UPI ID' text input. All fields are required. The form must be styled consistently with the premium glassmorphism design theme.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-3"
+        ],
+        "quotes": [
+          "ADD OPTION OF CLICK TO RECIVE THEN THERE IS A FORM STATE CITY FEEDBACK AND UPI ID"
+        ]
+      },
+      "acceptanceCriteria": [
+        "A 'Click to Claim Your Reward' button appears after the reward is revealed",
+        "Clicking the button reveals/scrolls to the claim form",
+        "Form contains State, City, Feedback, and UPI ID fields",
+        "All fields are required and validated before submission",
+        "Form is styled with the glassmorphism design theme"
+      ]
+    },
+    {
+      "id": "REQ-12",
+      "text": "On claim form submission, save the entry to the Motoko backend actor. Each submission must store: the unique coupon code (VW-XXXX-XXXX), reward amount, state, city, feedback, UPI ID, and a timestamp. Expose a query method to retrieve all submissions (for the admin panel). Expose a query method to retrieve a single submission by coupon code.",
+      "target": "backend",
+      "source": {
+        "messageIds": [
+          "msg-3"
+        ],
+        "quotes": [
+          "THERE A ADMIN PANEL WHERE HE CHECK THE COUPON CODE",
+          "AFTER THEY FILL THIS THEY GET A NOTIFCATION MONEY WILL BE IN YOUR ACCOUNT SOON"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Backend actor has a method to submit a claim with coupon code, reward amount, state, city, feedback, UPI ID, and timestamp",
+        "Backend actor has a query method to retrieve all submitted claims",
+        "Backend actor has a query method to look up a claim by coupon code",
+        "Data persists across calls within the same session"
+      ]
+    },
+    {
+      "id": "REQ-13",
+      "text": "After the user submits the claim form successfully, hide the form and display a full-screen or overlay animated confirmation notification. The notification must show the message 'Money will be in your account soon!' with a celebration animation (e.g., animated checkmark, ripple/pulse effect, or animated coins/wallet icon). Animate the notification's entrance with a smooth scale-up or slide-up transition. Use brand colors (blue, white, gold).",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-3"
+        ],
+        "quotes": [
+          "AFTER THEY FILL THIS THEY GET A NOTIFCATION MONEY WILL BE IN YOUR ACCOUNT SOON WITH ANIMATION"
+        ]
+      },
+      "acceptanceCriteria": [
+        "After form submission, the form is hidden and a confirmation notification appears",
+        "Notification displays 'Money will be in your account soon!' text prominently",
+        "Notification has an animated entrance (scale-up or slide-up)",
+        "An animated icon (checkmark, coins, or wallet) is displayed",
+        "Notification uses brand colors: blue, white, gold"
+      ]
+    },
+    {
+      "id": "REQ-14",
+      "text": "Create a separate Admin Panel page or route accessible via a hidden/discrete link (e.g., '/admin' or a small footer link). The admin panel must: display a table/list of all submitted claim entries (coupon code, reward amount, state, city, UPI ID, feedback, timestamp); allow searching/filtering by coupon code; show the total number of submissions and a breakdown of reward amounts distributed. Protect the admin panel with a simple hardcoded password prompt (e.g., 'vitalis2024'). Style it cleanly with the brand theme.",
+      "target": "both",
+      "source": {
+        "messageIds": [
+          "msg-3"
+        ],
+        "quotes": [
+          "IN THIS PANEL THERE A ADMIN PANEL WHERE HE CHECK THE COUPON CODE EVERYTIME THE COUPON NO WAS DIFFRENT"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Admin panel is accessible via a discrete route or link",
+        "Admin panel is password-protected with a hardcoded password",
+        "Displays all submitted claims in a table with coupon code, reward, state, city, UPI ID, feedback, and timestamp",
+        "Supports searching or filtering by coupon code",
+        "Shows total submission count and reward amount breakdown",
+        "Styled consistently with the brand theme"
+      ]
+    }
+  ],
+  "constraints": [
+    "Do not modify frontend/src/hooks/useInternetIdentity.ts, frontend/src/hooks/useActor.ts, frontend/src/main.tsx, or any files under frontend/src/components/ui",
+    "Use the uploaded Vitalis logo image (vitalis-logo.png) as a static asset in frontend/public/assets/generated",
+    "All sounds must remain generated via Web Audio API — no external audio files",
+    "Admin panel password must be hardcoded (no authentication system integration)"
+  ],
+  "nonGoals": [
+    "Real payment processing or actual UPI transfer integration",
+    "Email or SMS notifications",
+    "User authentication via Internet Identity for the main scratch flow",
+    "External database or cloud storage",
+    "Multi-language support"
+  ],
+  "imageRequirements": {
+    "required": [],
+    "edits": [
+      "Crop to tight bounds, remove white background, preserve transparent PNG (image.png > vitalis-logo.dim_300x120.png)"
+    ]
+  }
+}

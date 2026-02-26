@@ -1,0 +1,212 @@
+{
+  "schemaVersion": "1.0.0",
+  "projectStateVersion": 5,
+  "summary": "Mobile-first Scratch & Win reward website for 'Vitalist Water' brand campaign. Users scan a QR code on a bottle and get a random reward via an interactive scratch card UI. Reward distribution is weighted: 90% chance ₹10, 4% chance ₹20, 2% chance ₹30 (others), 2% chance ₹90, 0.1% chance ₹100. After scratching, users click 'Claim' and fill a form (state, city, feedback, UPI ID) to receive payment. A 'Money will be in your account soon' confirmation animation is shown after form submission. Includes an admin panel to view all submitted coupon codes and claim details. Built with pure HTML/CSS/JS, no backend, embeddable in Google Sites. Premium professional design with uploaded brand logo.",
+  "architectural_notes": [
+    "Pure HTML/CSS/JS only — no backend, no external paid libraries",
+    "Must be embeddable in Google Sites and optimized for QR scan mobile traffic",
+    "Reward probability is weighted: 90% ₹10, 4% ₹20, ~3.9% ₹30, 2% ₹90, 0.1% ₹100",
+    "Claim form collects state, city, feedback, UPI ID — stored in localStorage for admin panel (no backend)"
+  ],
+  "known_issues": [],
+  "isFixRequest": false,
+  "imageRequirements": "## Edit Images\n- Crop to tight bounds, remove white background, preserve transparent PNG (image.png > vitalis-logo.dim_300x120.png)",
+  "existing_features": [
+    {
+      "id": "feature-generate-a-random-reward-amount-between-10-and-100-in-multiples-of-10-every-time-the-page-loads-also-generate-a-unique-alphanumeric-code-e-g-vw-xxxx-xxxx-per-session-that-is-displayed-on-the-scratch-card-before-and-after-reveal",
+      "title": "Generate a random reward amount between ₹10 and ₹100 (in multiples of ₹10) every time the page loads. Also generate a unique alphanumeric code (e.g., 'VW-XXXX-XXXX') per session that is displayed on the scratch card before and after reveal.",
+      "reqIds": [
+        "REQ-1"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-implement-a-scratch-card-ui-component-at-the-center-of-the-page-the-card-uses-a-glassmorphism-style-frosted-glass-effect-soft-shadows-semi-transparent-layers-with-a-silver-grey-scratch-overlay-the-user-scratches-the-overlay-by-dragging-a-finger-or-mouse-to-reveal-the-reward-amount-beneath-the-unique-code-is-printed-on-the-front-face-of-the-card-visible-before-scratching",
+      "title": "Implement a scratch card UI component at the center of the page. The card uses a glassmorphism style (frosted glass effect, soft shadows, semi-transparent layers) with a silver/grey scratch overlay. The user scratches the overlay by dragging a finger or mouse to reveal the reward amount beneath. The unique code is printed on the front face of the card (visible before scratching).",
+      "reqIds": [
+        "REQ-2"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-trigger-a-confetti-burst-celebration-animation-immediately-after-the-scratch-card-reward-is-fully-revealed-use-a-lightweight-canvas-based-confetti-implementation-no-external-paid-libraries-confetti-should-use-blue-white-and-gold-colors-matching-the-vitalist-water-brand",
+      "title": "Trigger a confetti burst celebration animation immediately after the scratch card reward is fully revealed. Use a lightweight canvas-based confetti implementation (no external paid libraries). Confetti should use blue, white, and gold colors matching the Vitalist Water brand.",
+      "reqIds": [
+        "REQ-3"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-play-a-light-scratch-sound-effect-when-the-user-begins-scratching-the-card-and-a-winning-chime-bell-sound-when-the-reward-is-revealed-sounds-must-be-generated-programmatically-using-the-web-audio-api-no-external-audio-files-or-paid-libraries",
+      "title": "Play a light scratch sound effect when the user begins scratching the card, and a winning chime/bell sound when the reward is revealed. Sounds must be generated programmatically using the Web Audio API (no external audio files or paid libraries).",
+      "reqIds": [
+        "REQ-4"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-animate-water-drop-particles-falling-on-page-load-for-approximately-2-seconds-before-settling-giving-a-refreshing-water-brand-feel-after-the-drops-settle-the-main-ui-appears-with-a-smooth-fade-in",
+      "title": "Animate water drop particles falling on page load for approximately 2 seconds before settling, giving a refreshing water brand feel. After the drops settle, the main UI appears with a smooth fade-in.",
+      "reqIds": [
+        "REQ-5"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-structure-the-page-into-the-following-sections-in-order-1-logo-section-at-the-top-with-the-vitalist-water-brand-name-and-a-water-drop-icon-2-hero-area-with-the-tagline-scan-scratch-win-and-a-stylized-water-bottle-illustration-or-image-3-congratulations-heading-above-the-scratch-card-4-scratch-card-component-in-the-center-5-reward-reveal-section-showing-the-large-bold-amount-after-scratching-6-footer-with-the-vitalist-water-brand-name-and-a-small-copyright-line",
+      "title": "Structure the page into the following sections in order: (1) Logo section at the top with the 'Vitalist Water' brand name and a water-drop icon, (2) Hero area with the tagline 'Scan. Scratch. Win.' and a stylized water bottle illustration or image, (3) Congratulations heading above the scratch card, (4) Scratch card component in the center, (5) Reward reveal section showing the large bold ₹ amount after scratching, (6) Footer with the 'Vitalist Water' brand name and a small copyright line.",
+      "reqIds": [
+        "REQ-6"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-apply-a-premium-vitalist-water-visual-theme-blue-to-white-gradient-background-glassmorphism-card-panels-modern-sans-serif-typography-centered-single-column-layout-optimized-for-mobile-screens-max-width-420px-all-interactive-elements-must-have-smooth-css-transitions-and-hover-active-states-the-overall-feel-should-convey-purity-freshness-and-premium-quality",
+      "title": "Apply a premium Vitalist Water visual theme: blue-to-white gradient background, glassmorphism card panels, modern sans-serif typography, centered single-column layout optimized for mobile screens (max-width ~420px). All interactive elements must have smooth CSS transitions and hover/active states. The overall feel should convey purity, freshness, and premium quality.",
+      "reqIds": [
+        "REQ-7"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-replace-all-existing-logo-header-references-with-the-uploaded-vitalist-water-brand-logo-vitalis-logo-png-use-it-in-the-header-logo-component-at-full-quality-with-appropriate-sizing-remove-text-only-fallbacks-where-the-image-is-available-ensure-the-logo-is-crisp-and-prominent-at-the-top-of-the-page",
+      "title": "Replace all existing logo/header references with the uploaded Vitalist Water brand logo (vitalis-logo.png). Use it in the header/Logo component at full quality with appropriate sizing. Remove text-only fallbacks where the image is available. Ensure the logo is crisp and prominent at the top of the page.",
+      "reqIds": [
+        "REQ-8"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-overhaul-the-entire-visual-design-to-a-premium-professional-level-apply-a-deep-ocean-to-light-blue-gradient-background-elevated-glassmorphism-card-panels-with-stronger-blur-and-refined-borders-high-contrast-modern-typography-using-a-clean-sans-serif-font-refined-spacing-and-padding-polished-button-styles-with-gradient-fills-and-subtle-glow-effects-and-micro-animations-on-interactive-elements-the-overall-aesthetic-must-feel-like-a-premium-brand-campaign-similar-to-high-end-fmcg-product-promotions",
+      "title": "Overhaul the entire visual design to a premium professional level. Apply a deep ocean-to-light-blue gradient background, elevated glassmorphism card panels with stronger blur and refined borders, high-contrast modern typography using a clean sans-serif font, refined spacing and padding, polished button styles with gradient fills and subtle glow effects, and micro-animations on interactive elements. The overall aesthetic must feel like a premium brand campaign — similar to high-end FMCG product promotions.",
+      "reqIds": [
+        "REQ-9"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-the-weighted-reward-probability-in-rewardgenerator-ts-to-90-chance-of-10-4-chance-of-20-3-9-chance-of-30-2-chance-of-90-and-0-1-chance-of-100-remove-any-other-reward-amounts",
+      "title": "Update the weighted reward probability in rewardGenerator.ts to: 90% chance of ₹10, 4% chance of ₹20, 3.9% chance of ₹30, 2% chance of ₹90, and 0.1% chance of ₹100. Remove any other reward amounts.",
+      "reqIds": [
+        "REQ-10"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-after-the-scratch-card-reward-is-revealed-display-a-prominent-click-to-claim-your-reward-button-below-the-reward-amount-tapping-clicking-this-button-scrolls-to-or-reveals-a-claim-form-the-form-must-contain-a-state-dropdown-or-text-input-a-city-text-input-a-feedback-textarea-and-a-upi-id-text-input-all-fields-are-required-the-form-must-be-styled-consistently-with-the-premium-glassmorphism-design-theme",
+      "title": "After the scratch card reward is revealed, display a prominent 'Click to Claim Your Reward' button below the reward amount. Tapping/clicking this button scrolls to or reveals a claim form. The form must contain: a 'State' dropdown or text input, a 'City' text input, a 'Feedback' textarea, and a 'UPI ID' text input. All fields are required. The form must be styled consistently with the premium glassmorphism design theme.",
+      "reqIds": [
+        "REQ-11"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-after-the-user-submits-the-claim-form-successfully-hide-the-form-and-display-a-full-screen-or-overlay-animated-confirmation-notification-the-notification-must-show-the-message-money-will-be-in-your-account-soon-with-a-celebration-animation-e-g-animated-checkmark-ripple-pulse-effect-or-animated-coins-wallet-icon-animate-the-notification-s-entrance-with-a-smooth-scale-up-or-slide-up-transition-use-brand-colors-blue-white-gold",
+      "title": "After the user submits the claim form successfully, hide the form and display a full-screen or overlay animated confirmation notification. The notification must show the message 'Money will be in your account soon!' with a celebration animation (e.g., animated checkmark, ripple/pulse effect, or animated coins/wallet icon). Animate the notification's entrance with a smooth scale-up or slide-up transition. Use brand colors (blue, white, gold).",
+      "reqIds": [
+        "REQ-13"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-create-a-separate-admin-panel-page-or-route-accessible-via-a-hidden-discrete-link-e-g-admin-or-a-small-footer-link-the-admin-panel-must-display-a-table-list-of-all-submitted-claim-entries-coupon-code-reward-amount-state-city-upi-id-feedback-timestamp-allow-searching-filtering-by-coupon-code-show-the-total-number-of-submissions-and-a-breakdown-of-reward-amounts-distributed-protect-the-admin-panel-with-a-simple-hardcoded-password-prompt-e-g-vitalis2024-style-it-cleanly-with-the-brand-theme",
+      "title": "Create a separate Admin Panel page or route accessible via a hidden/discrete link (e.g., '/admin' or a small footer link). The admin panel must: display a table/list of all submitted claim entries (coupon code, reward amount, state, city, UPI ID, feedback, timestamp); allow searching/filtering by coupon code; show the total number of submissions and a breakdown of reward amounts distributed. Protect the admin panel with a simple hardcoded password prompt (e.g., 'vitalis2024'). Style it cleanly with the brand theme.",
+      "reqIds": [
+        "REQ-14"
+      ],
+      "version": 1
+    }
+  ],
+  "new_feature_requests": [
+    {
+      "id": "AR-1",
+      "summary": "Random reward generator (₹10–₹100) on every page load",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-2",
+      "summary": "Scratch card UI with animated scratch overlay and glassmorphism design",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-3",
+      "summary": "Confetti celebration animation after reward reveal",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-4",
+      "summary": "Unique code displayed on each scratch card",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-5",
+      "summary": "Water drop animation on page load and bottle image hero section",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-6",
+      "summary": "Page sections: logo, 'Scan. Scratch. Win.' tagline, scratch card, reward reveal, footer with brand name",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-7",
+      "summary": "Sound effect on scratch interaction",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-8",
+      "summary": "Fully mobile-optimized, fast-loading, embed-friendly for Google Sites",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-9",
+      "summary": "Weighted reward probability: 90% ₹10, 4% ₹20, ~4% ₹30, 2% ₹90, 0.1% ₹100",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-10",
+      "summary": "Claim button after scratch reveal that opens a form with state, city, feedback, and UPI ID fields",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-11",
+      "summary": "After form submission, show animated 'Money will be in your account soon' confirmation notification",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-12",
+      "summary": "Admin panel to view all submitted coupon codes and claim details (state, city, UPI ID, reward amount)",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-13",
+      "summary": "Use uploaded brand logo in header and throughout the UI for a professional look",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-18",
+      "summary": "On claim form submission, save the entry to the Motoko backend actor. Each submission must store: the unique coupon code (VW-XXXX-XXXX), reward amount, state, city, feedback, UPI ID, and a timestamp. Expose a query method to retrieve all submissions (for the admin panel). Expose a query method to retrieve a single submission by coupon code.",
+      "reqIds": [
+        "REQ-12"
+      ],
+      "status": "pending"
+    }
+  ],
+  "gameProjectType": "none",
+  "projectName": "Vitalist Water Scratch & Win",
+  "clarification_mode": "instant",
+  "clarification_rounds": 0
+}

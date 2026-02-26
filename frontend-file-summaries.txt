@@ -1,0 +1,20 @@
+{
+  "frontend/src/App.tsx": "Root application component with simple client-side routing — renders ScratchPage at '/' and AdminPanel at '/admin' using popstate events.",
+  "frontend/src/utils/rewardGenerator.ts": "Weighted reward generator with ₹10 at 90%, ₹20 at 4%, ₹30 at 3.9%, ₹90 at 2%, ₹100 at 0.1%, plus unique VW-XXXX-XXXX code generator.",
+  "frontend/src/utils/audioGenerator.ts": "Web Audio API utility with playScratchSound() (white noise burst) and playWinningChime() (ascending C-E-G-C tone sequence) functions.",
+  "frontend/src/hooks/useScratchCanvas.ts": "Custom React hook managing canvas-based scratch interaction with pointer/touch events, pixel erasure, progress tracking, and reveal threshold detection.",
+  "frontend/src/components/WaterDropIntro.tsx": "Canvas-based water drop intro animation component rendering 20 falling drops over 2.2 seconds with a gradient background, then calling onComplete.",
+  "frontend/src/components/Confetti.tsx": "Canvas-based confetti burst component with 120 blue/white/gold particles using requestAnimationFrame physics, triggered once on reveal and lasting ~3.5 seconds.",
+  "frontend/src/components/ScratchCard.tsx": "Glassmorphism scratch card component displaying the unique code badge, reward amount beneath, and a canvas scratch overlay with progress hint.",
+  "frontend/src/components/Logo.tsx": "Vitalis Water logo header using the uploaded brand image asset with drop-shadow styling and a text fallback.",
+  "frontend/src/components/Hero.tsx": "Hero section with animated \"Scan. Scratch. Win.\" tagline, floating bottle image, and subtitle.",
+  "frontend/src/components/RewardReveal.tsx": "Animated reward reveal card showing the prize amount, description, validity notice, and a prominent gold \"Click to Receive\" claim button with shimmer hover effect.",
+  "frontend/src/components/Footer.tsx": "Site footer with Vitalis logo, copyright, tagline, caffeine.ai attribution, and a discrete admin panel link.",
+  "frontend/src/pages/ScratchPage.tsx": "Main page orchestrating intro, logo, hero, scratch card, reward reveal, claim form, and confirmation notification with full state management and smooth scroll-to-form behavior.",
+  "frontend/src/index.css": "Complete premium Vitalis Water design system with deep ocean gradient background, enhanced glassmorphism cards, gold claim button, claim form styles, animated confirmation notification, and admin panel styles.",
+  "frontend/tailwind.config.js": "Extended Tailwind config with Vitalis brand color tokens (deep navy to light blue + gold), glass/glow shadow utilities, and animation keyframes for float, shimmer, pop, ripple, coin-bounce, and spin.",
+  "frontend/src/hooks/useQueries.ts": "React Query hooks for all backend operations: fetching all submissions, reward stats, searching by coupon prefix, and submitting a new claim with cache invalidation.",
+  "frontend/src/components/ClaimForm.tsx": "Glassmorphism claim form with State dropdown, City, UPI ID, and Feedback fields; validates all inputs, calls the backend submitClaim mutation, and triggers a success callback on completion.",
+  "frontend/src/components/ConfirmationNotification.tsx": "Full-screen overlay confirmation notification with animated checkmark, ripple rings, bouncing coins, \"Money will be in your account soon!\" message, and auto-dismiss after 6 seconds.",
+  "frontend/src/pages/AdminPanel.tsx": "Password-protected admin dashboard (password: vitalis2024) showing all claim submissions in a searchable table with reward stats breakdown, styled with the premium glassmorphism theme."
+}
