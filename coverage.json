@@ -1,26 +1,33 @@
 {
   "kind": "coverage_report",
   "version": "1.0",
-  "generatedAt": "2026-02-26T07:57:59.831Z",
+  "generatedAt": "2026-02-26T08:31:28.950Z",
   "sources": {
     "buildRequest": true,
     "implementationPlan": true
   },
   "requirements": {
-    "total": 1,
+    "total": 2,
     "implemented": 1,
     "items": [
       {
-        "id": "REQ-25",
-        "summary": "Diagnose and fix the runtime error thrown when the user clicks the 'Submit' button on the ClaimForm. Inspect the useSubmitClaim hook in useQueries.ts and the ClaimForm component to identify the exact failure point (e.g., missing or undefined actor, incorrect argument shape passed to the backend submitClaim function, type mismatch between frontend payload and Motoko actor method signature). Ensure the mutation is called with all required fields (couponCode, rewardAmount, state, city, feedback, upiId) with correct types, error boundaries are in place, and the error is surfaced to the user with a visible inline message rather than a silent failure or crash.",
+        "id": "REQ-30",
+        "summary": "Fix the 'Unauthorized: Only admins can view submissions' error in the backend. In backend/main.mo, the getSubmissions (and any other admin-gated) function must not require Internet Identity authentication or any caller-identity check that blocks access when called from the frontend admin panel. Since the admin panel uses a hardcoded frontend credential check (email/password in sessionStorage), the backend getSubmissions, getStats, and markAsRedeemed functions must be accessible without rejecting the caller as unauthorized. Remove or disable any caller-identity-based admin guard in main.mo that currently causes this rejection, so any caller (including anonymous) can invoke these query/update functions.",
+        "status": "unknown",
+        "plannedFiles": [],
+        "matchedFiles": []
+      },
+      {
+        "id": "REQ-31",
+        "summary": "Fix the end-to-end persistence and retrieval of claim submission data so that after a user submits the claim form, the full record (coupon code, reward amount, state, city, UPI ID, feedback, timestamp, status) is correctly stored in the Motoko backend's stable state and returned in full by getSubmissions. Audit backend/main.mo to ensure: (1) the submitClaim function writes all fields to stable storage without dropping or ignoring any field; (2) the getSubmissions function reads from the same stable variable and returns the complete list; (3) the Submission record type includes all fields: couponCode, rewardAmount, state, city, upiId, feedback, timestamp, status. Audit useQueries.ts to ensure the useSubmitClaim mutation passes all required fields with correct types matching the Motoko function signature, and on success invalidates the submissions React Query cache key so AdminPanel.tsx re-fetches fresh data.",
         "status": "implemented",
         "plannedFiles": [
           "frontend/src/hooks/useQueries.ts",
+          "frontend/src/pages/AdminPanel.tsx",
           "frontend/src/components/ClaimForm.tsx"
         ],
         "matchedFiles": [
-          "frontend/src/hooks/useQueries.ts",
-          "frontend/src/components/ClaimForm.tsx"
+          "frontend/src/hooks/useQueries.ts"
         ]
       }
     ]
@@ -31,7 +38,10 @@
     "feature_evidence.json",
     "frontend-file-summaries.txt",
     "frontend-implementation-plan.json",
-    "frontend/src/components/ClaimForm.tsx",
+    "frontend/src/backend.d.ts",
+    "frontend/src/backend.ts",
+    "frontend/src/declarations/backend.did.d.ts",
+    "frontend/src/declarations/backend.did.js",
     "frontend/src/hooks/useQueries.ts",
     "project_state.json",
     "scratch/component-selection.json",

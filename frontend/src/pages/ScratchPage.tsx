@@ -10,7 +10,11 @@ import AdminLoginModal from '../components/AdminLoginModal';
 import Footer from '../components/Footer';
 import { generateUniqueCode, generateReward } from '../utils/rewardGenerator';
 
-export default function ScratchPage() {
+interface ScratchPageProps {
+  onAdminLoginSuccess: () => void;
+}
+
+export default function ScratchPage({ onAdminLoginSuccess }: ScratchPageProps) {
   const [showIntro, setShowIntro] = useState(true);
   const [scratchComplete, setScratchComplete] = useState(false);
   const [confettiTriggered, setConfettiTriggered] = useState(false);
@@ -32,10 +36,10 @@ export default function ScratchPage() {
     setShowConfirmation(true);
   }, []);
 
-  const handleAdminLogin = useCallback(() => {
-    window.history.pushState({}, '', '/admin');
-    window.dispatchEvent(new PopStateEvent('popstate'));
-  }, []);
+  const handleAdminLoginSuccess = useCallback(() => {
+    setShowAdminModal(false);
+    onAdminLoginSuccess();
+  }, [onAdminLoginSuccess]);
 
   const handleScrollToClaim = useCallback(() => {
     const el = document.getElementById('claim-form-section');
@@ -60,7 +64,7 @@ export default function ScratchPage() {
       <AdminLoginModal
         open={showAdminModal}
         onClose={() => setShowAdminModal(false)}
-        onSuccess={handleAdminLogin}
+        onSuccess={handleAdminLoginSuccess}
       />
 
       {/* Main content */}

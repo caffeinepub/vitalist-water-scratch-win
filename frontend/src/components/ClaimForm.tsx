@@ -1,11 +1,10 @@
 import React, { useState } from 'react';
 import { useSubmitClaim } from '../hooks/useQueries';
-import { Loader2 } from 'lucide-react';
 
 interface ClaimFormProps {
   couponCode: string;
   rewardAmount: number;
-  onSuccess: () => void;
+  onSuccess?: () => void;
 }
 
 const INDIAN_STATES = [
@@ -23,54 +22,71 @@ export default function ClaimForm({ couponCode, rewardAmount, onSuccess }: Claim
   const [city, setCity] = useState('');
   const [upiId, setUpiId] = useState('');
   const [feedback, setFeedback] = useState('');
+  const [submitted, setSubmitted] = useState(false);
 
-  const submitClaimMutation = useSubmitClaim();
+  const submitClaim = useSubmitClaim();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!state || !city || !upiId) {
-      return;
-    }
+    if (!state || !city.trim() || !upiId.trim()) return;
 
-    submitClaimMutation.mutate(
+    // Reset any previous error state before retrying
+    submitClaim.reset();
+
+    submitClaim.mutate(
       {
         couponCode,
         rewardAmount,
         state,
-        city,
-        feedback,
-        upiId,
+        city: city.trim(),
+        feedback: feedback.trim(),
+        upiId: upiId.trim(),
       },
       {
         onSuccess: () => {
-          onSuccess();
+          setSubmitted(true);
+          onSuccess?.();
         },
-        onError: (error: Error) => {
-          // Error is displayed inline via submitClaimMutation.error
-          console.error('Claim submission error:', error.message);
-        },
-      }
+      },
     );
   };
 
-  const isSubmitting = submitClaimMutation.isPending;
-  const errorMessage = submitClaimMutation.error?.message;
+  if (submitted) {
+    return (
+      <div className="claim-form-success">
+        <div className="success-icon">✅</div>
+        <h3>Claim Submitted!</h3>
+        <p>Your reward of <strong>₹{rewardAmount}</strong> will be transferred to your UPI ID shortly.</p>
+        <p className="success-coupon">Coupon: <strong>{couponCode}</strong></p>
+      </div>
+    );
+  }
+
+  // Derive a clean, user-friendly error message
+  const errorMessage = submitClaim.isError
+    ? (submitClaim.error instanceof Error
+        ? submitClaim.error.message
+        : 'Submission failed. Please try again.')
+    : null;
+
+  const isFormValid = !!state && !!city.trim() && !!upiId.trim();
 
   return (
-    <div id="claim-form" className="claim-form-container glass-card">
+    <div id="claim-form" className="claim-form-container">
       <div className="claim-form-header">
         <h2 className="claim-form-title">🎉 Claim Your Reward</h2>
         <p className="claim-form-subtitle">
-          You won <span className="reward-highlight">₹{rewardAmount}</span>! Fill in your details to receive your reward.
+          You won <span className="reward-highlight">₹{rewardAmount}</span>! Fill in your details to receive the payment.
         </p>
-        <div className="coupon-code-display">
+        <div className="coupon-display">
           <span className="coupon-label">Coupon Code:</span>
-          <span className="coupon-value">{couponCode}</span>
+          <span className="coupon-code">{couponCode}</span>
         </div>
       </div>
 
       <form onSubmit={handleSubmit} className="claim-form">
+        {/* State */}
         <div className="form-group">
           <label htmlFor="state" className="form-label">
             State <span className="required">*</span>
@@ -79,19 +95,17 @@ export default function ClaimForm({ couponCode, rewardAmount, onSuccess }: Claim
             id="state"
             value={state}
             onChange={(e) => setState(e.target.value)}
-            className="form-select"
             required
-            disabled={isSubmitting}
+            className="form-select"
           >
             <option value="">Select your state</option>
             {INDIAN_STATES.map((s) => (
-              <option key={s} value={s}>
-                {s}
-              </option>
+              <option key={s} value={s}>{s}</option>
             ))}
           </select>
         </div>
 
+        {/* City */}
         <div className="form-group">
           <label htmlFor="city" className="form-label">
             City <span className="required">*</span>
@@ -102,12 +116,12 @@ export default function ClaimForm({ couponCode, rewardAmount, onSuccess }: Claim
             value={city}
             onChange={(e) => setCity(e.target.value)}
             placeholder="Enter your city"
-            className="form-input"
             required
-            disabled={isSubmitting}
+            className="form-input"
           />
         </div>
 
+        {/* UPI ID */}
         <div className="form-group">
           <label htmlFor="upiId" className="form-label">
             UPI ID <span className="required">*</span>
@@ -118,12 +132,12 @@ export default function ClaimForm({ couponCode, rewardAmount, onSuccess }: Claim
             value={upiId}
             onChange={(e) => setUpiId(e.target.value)}
             placeholder="e.g. yourname@upi"
-            className="form-input"
             required
-            disabled={isSubmitting}
+            className="form-input"
           />
         </div>
 
+        {/* Feedback */}
         <div className="form-group">
           <label htmlFor="feedback" className="form-label">
             Feedback <span className="optional">(optional)</span>
@@ -132,33 +146,39 @@ export default function ClaimForm({ couponCode, rewardAmount, onSuccess }: Claim
             id="feedback"
             value={feedback}
             onChange={(e) => setFeedback(e.target.value)}
-            placeholder="Share your experience with Vitalis Water..."
-            className="form-textarea"
+            placeholder="Share your experience with Vitalis Water…"
             rows={3}
-            disabled={isSubmitting}
+            className="form-textarea"
           />
         </div>
 
+        {/* Inline error — shown after failed submission, button stays enabled for retry */}
         {errorMessage && (
-          <div className="form-submit-error">
-            <span>⚠️ {errorMessage}</span>
+          <div className="form-submit-error" role="alert">
+            ⚠️ {errorMessage}
           </div>
         )}
 
+        {/* Submit — only disabled while actively pending, NOT when in error state */}
         <button
           type="submit"
+          disabled={submitClaim.isPending || !isFormValid}
           className="form-submit-btn"
-          disabled={isSubmitting || !state || !city || !upiId}
         >
-          {isSubmitting ? (
-            <>
-              <Loader2 className="inline-block w-4 h-4 mr-2 animate-spin" />
-              Submitting...
-            </>
+          {submitClaim.isPending ? (
+            <span className="btn-loading">
+              <span className="spinner" /> Submitting…
+            </span>
+          ) : submitClaim.isError ? (
+            '🔄 Retry Submission'
           ) : (
-            'Submit Claim'
+            '💸 Submit Claim'
           )}
         </button>
+
+        <p className="form-disclaimer">
+          * Reward will be transferred within 3–5 business days to your UPI ID.
+        </p>
       </form>
     </div>
   );

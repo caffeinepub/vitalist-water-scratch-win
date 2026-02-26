@@ -1,13 +1,12 @@
 # Specification
 
 ## Summary
-**Goal:** Fix the runtime error that occurs when the user clicks the "Submit" button on the ClaimForm.
+**Goal:** Fix the admin authorization error in the backend and ensure claim submission data is fully stored and visible in the admin panel.
 
 **Planned changes:**
-- Diagnose the failure point in the `useSubmitClaim` hook (`useQueries.ts`) and `ClaimForm` component (e.g., undefined actor, wrong argument shape, type mismatch with the Motoko `submitClaim` method).
-- Ensure the mutation is invoked with all required fields (`couponCode`, `rewardAmount`, `state`, `city`, `feedback`, `upiId`) using the correct types matching the backend signature.
-- Add error handling so backend failures display an inline error message inside the form instead of crashing.
-- Show a loading/disabled state on the Submit button while the mutation is in progress.
-- Display the `ConfirmationNotification` component and hide the form on successful submission.
+- Remove or disable the caller-identity-based admin guard in `backend/main.mo` so that `getSubmissions`, `getStats`, and `markAsRedeemed` are accessible without returning an "Unauthorized" error.
+- Audit and fix `backend/main.mo` to ensure the `Submission` record type includes all fields (couponCode, rewardAmount, state, city, upiId, feedback, timestamp, status) and that `submitClaim` writes all fields to stable storage.
+- Audit and fix `useQueries.ts` to ensure the `useSubmitClaim` mutation passes all required fields with correct types matching the Motoko function signature.
+- On successful claim submission, invalidate the React Query submissions cache so `AdminPanel.tsx` re-fetches fresh data.
 
-**User-visible outcome:** Users can submit the claim form without encountering a runtime error; submission shows a loading indicator, surfaces any errors inline, and on success shows the confirmation screen.
+**User-visible outcome:** After a user submits the claim form, all submission details (coupon code, reward amount, state, city, UPI ID, feedback, timestamp, status) immediately appear in the admin panel without any authorization errors.

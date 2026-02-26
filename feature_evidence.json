@@ -2,10 +2,9 @@
   "kind": "feature_evidence_report",
   "features": [
     {
-      "featureId": "feature-diagnose-and-fix-the-runtime-error-thrown-when-the-user-clicks-the-submit-button-on-the-claimform-inspect-the-usesubmitclaim-hook-in-usequeries-ts-and-the-claimform-component-to-identify-the-exact-failure-point-e-g-missing-or-undefined-actor-incorrect-argument-shape-passed-to-the-backend-submitclaim-function-type-mismatch-between-frontend-payload-and-motoko-actor-method-signature-ensure-the-mutation-is-called-with-all-required-fields-couponcode-rewardamount-state-city-feedback-upiid-with-correct-types-error-boundaries-are-in-place-and-the-error-is-surfaced-to-the-user-with-a-visible-inline-message-rather-than-a-silent-failure-or-crash",
-      "featureTitle": "Diagnose and fix the runtime error thrown when the user clicks the 'Submit' button on the ClaimForm. Inspect the useSubmitClaim hook in useQueries.ts and the ClaimForm component to identify the exact failure point (e.g., missing or undefined actor, incorrect argument shape passed to the backend submitClaim function, type mismatch between frontend payload and Motoko actor method signature). Ensure the mutation is called with all required fields (couponCode, rewardAmount, state, city, feedback, upiId) with correct types, error boundaries are in place, and the error is surfaced to the user with a visible inline message rather than a silent failure or crash.",
+      "featureId": "feature-fix-the-end-to-end-persistence-and-retrieval-of-claim-submission-data-so-that-after-a-user-submits-the-claim-form-the-full-record-coupon-code-reward-amount-state-city-upi-id-feedback-timestamp-status-is-correctly-stored-in-the-motoko-backend-s-stable-state-and-returned-in-full-by-getsubmissions-audit-backend-main-mo-to-ensure-1-the-submitclaim-function-writes-all-fields-to-stable-storage-without-dropping-or-ignoring-any-field-2-the-getsubmissions-function-reads-from-the-same-stable-variable-and-returns-the-complete-list-3-the-submission-record-type-includes-all-fields-couponcode-rewardamount-state-city-upiid-feedback-timestamp-status-audit-usequeries-ts-to-ensure-the-usesubmitclaim-mutation-passes-all-required-fields-with-correct-types-matching-the-motoko-function-signature-and-on-success-invalidates-the-submissions-react-query-cache-key-so-adminpanel-tsx-re-fetches-fresh-data",
+      "featureTitle": "Fix the end-to-end persistence and retrieval of claim submission data so that after a user submits the claim form, the full record (coupon code, reward amount, state, city, UPI ID, feedback, timestamp, status) is correctly stored in the Motoko backend's stable state and returned in full by getSubmissions. Audit backend/main.mo to ensure: (1) the submitClaim function writes all fields to stable storage without dropping or ignoring any field; (2) the getSubmissions function reads from the same stable variable and returns the complete list; (3) the Submission record type includes all fields: couponCode, rewardAmount, state, city, upiId, feedback, timestamp, status. Audit useQueries.ts to ensure the useSubmitClaim mutation passes all required fields with correct types matching the Motoko function signature, and on success invalidates the submissions React Query cache key so AdminPanel.tsx re-fetches fresh data.",
       "files": [
-        "frontend/src/components/ClaimForm.tsx",
         "frontend/src/hooks/useQueries.ts"
       ],
       "components": [
@@ -17,7 +16,7 @@
         "authorization@4.0.0"
       ],
       "testIds": [
-        "REQ-25"
+        "REQ-31"
       ],
       "confidence": "high"
     }

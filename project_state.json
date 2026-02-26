@@ -1,6 +1,6 @@
 {
   "schemaVersion": "1.0.0",
-  "projectStateVersion": 13,
+  "projectStateVersion": 21,
   "summary": "Mobile-first Scratch & Win reward website for 'Vitalist Water' brand campaign. Users scan a QR code on a bottle and get a random reward via an interactive scratch card UI. After fully scratching, a new unique code and reward amount are revealed. The claim form is hidden by default and only appears after the scratch is complete. Reward distribution is weighted: 90% chance ₹10, 4% chance ₹20, ~3.9% chance ₹30, 2% chance ₹90, 0.1% chance ₹100. After scratching, users click 'Claim' and fill a form (state, city, feedback, UPI ID) to receive payment. A 'Money will be in your account soon' confirmation animation is shown after form submission. Admin panel is accessible by double-clicking the Vitalis logo, then logging in with email 'shajan@vitalis.com' and password 'India@123'. Admin panel shows all submitted coupon codes and claim details, allows coupon verification, and lets admins mark coupons as 'redeemed/closed'. Built with pure HTML/CSS/JS, no backend, embeddable in Google Sites. Premium professional design with uploaded brand logo.",
   "architectural_notes": [
     "Pure HTML/CSS/JS only — no backend, no external paid libraries",
@@ -16,7 +16,12 @@
     "Claim and Submit buttons are not functioning — clicks do nothing or fail silently",
     "Vitalis logo is not fully visible in the header — appears cropped or poorly styled",
     "Admin panel UI is reported as very bad — needs full redesign and coupon verification/redemption feature",
-    "Submit button throws an error after clicking — claim submission flow is broken and needs to be fixed"
+    "Submit button throws an error after clicking — claim submission flow is broken and needs to be fixed",
+    "Claim form submissions are not appearing in the admin panel after submission — data flow between ClaimForm and admin panel data store is broken",
+    "Admin panel login is broken — login flow needs to be fixed",
+    "Canister xkmoi-tqaaa-aaaab-aaodq-cai is stopped (IC0508) — submitClaim calls are failing with a rejection error; canister needs to be started/restarted before backend calls can succeed",
+    "Admin panel throws 'Unauthorized: Only admins can view submissions' error — authorization check is incorrectly blocking admin access to getSubmissions",
+    "After claim submission, coupon code, reward amount, UPI ID and other details are not showing in the admin panel — submitted data is not being persisted or retrieved correctly"
   ],
   "isFixRequest": true,
   "existing_features": [
@@ -203,6 +208,38 @@
         "REQ-25"
       ],
       "version": 1
+    },
+    {
+      "id": "feature-diagnose-and-fix-the-end-to-end-data-flow-so-that-when-a-user-successfully-submits-the-claim-form-claimform-tsx-the-submission-is-persisted-to-the-motoko-backend-and-immediately-visible-in-the-admin-panel-adminpanel-tsx-trace-the-full-path-claimform-usesubmitclaim-mutation-in-usequeries-ts-backend-submitclaim-actor-method-getsubmissions-query-used-by-adminpanel-verify-that-1-the-usesubmitclaim-mutation-correctly-calls-the-backend-actor-s-submitclaim-function-with-all-required-fields-couponcode-rewardamount-state-city-feedback-upiid-2-on-mutation-success-the-react-query-cache-for-the-submissions-query-key-is-invalidated-so-adminpanel-fetches-fresh-data-3-the-usesubmissions-or-equivalent-hook-in-usequeries-ts-is-correctly-wired-in-adminpanel-tsx-and-is-not-using-a-stale-or-empty-cache-4-the-backend-submitclaim-function-stores-the-record-in-stable-persistent-state-and-getsubmissions-returns-it-fix-all-broken-links-in-this-chain",
+      "title": "Diagnose and fix the end-to-end data flow so that when a user successfully submits the claim form (ClaimForm.tsx), the submission is persisted to the Motoko backend and immediately visible in the Admin Panel (AdminPanel.tsx). Trace the full path: ClaimForm → useSubmitClaim mutation in useQueries.ts → backend submitClaim actor method → getSubmissions query used by AdminPanel. Verify that: (1) the useSubmitClaim mutation correctly calls the backend actor's submitClaim function with all required fields (couponCode, rewardAmount, state, city, feedback, upiId); (2) on mutation success, the React Query cache for the submissions query key is invalidated so AdminPanel fetches fresh data; (3) the useSubmissions (or equivalent) hook in useQueries.ts is correctly wired in AdminPanel.tsx and is not using a stale or empty cache; (4) the backend submitClaim function stores the record in stable/persistent state and getSubmissions returns it. Fix all broken links in this chain.",
+      "reqIds": [
+        "REQ-26"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-diagnose-and-fix-the-admin-panel-login-flow-in-adminloginmodal-tsx-and-app-tsx-ensure-that-1-double-clicking-the-vitalis-logo-in-the-header-correctly-opens-the-adminloginmodal-2-entering-email-shajan-vitalis-com-and-password-india-123-successfully-authenticates-and-navigates-to-the-adminpanel-3-incorrect-credentials-display-a-clear-inline-error-message-4-the-authenticated-admin-session-is-correctly-persisted-in-sessionstorage-so-the-adminpanel-remains-accessible-on-navigation-without-re-prompting-login-5-the-logout-action-clears-the-session-and-returns-the-user-to-scratchpage-fix-any-broken-event-wiring-state-mismatches-or-routing-logic-that-prevents-the-login-from-working",
+      "title": "Diagnose and fix the admin panel login flow in AdminLoginModal.tsx and App.tsx. Ensure that: (1) double-clicking the Vitalis logo in the header correctly opens the AdminLoginModal; (2) entering email 'shajan@vitalis.com' and password 'India@123' successfully authenticates and navigates to the AdminPanel; (3) incorrect credentials display a clear inline error message; (4) the authenticated admin session is correctly persisted in sessionStorage so the AdminPanel remains accessible on navigation without re-prompting login; (5) the logout action clears the session and returns the user to ScratchPage. Fix any broken event wiring, state mismatches, or routing logic that prevents the login from working.",
+      "reqIds": [
+        "REQ-27"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-in-frontend-src-hooks-usequeries-ts-and-frontend-src-components-claimform-tsx-add-explicit-error-handling-for-ic0508-canister-stopped-rejections-when-the-mutation-receives-a-rejection-with-error-code-ic0508-or-reject-code-5-display-a-user-friendly-inline-error-message-such-as-service-temporarily-unavailable-please-try-again-in-a-moment-instead-of-a-silent-failure-or-raw-error-object",
+      "title": "In frontend/src/hooks/useQueries.ts and frontend/src/components/ClaimForm.tsx, add explicit error handling for IC0508 canister-stopped rejections. When the mutation receives a rejection with error_code 'IC0508' or reject_code 5, display a user-friendly inline error message such as 'Service temporarily unavailable. Please try again in a moment.' instead of a silent failure or raw error object.",
+      "reqIds": [
+        "REQ-29"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-fix-the-end-to-end-persistence-and-retrieval-of-claim-submission-data-so-that-after-a-user-submits-the-claim-form-the-full-record-coupon-code-reward-amount-state-city-upi-id-feedback-timestamp-status-is-correctly-stored-in-the-motoko-backend-s-stable-state-and-returned-in-full-by-getsubmissions-audit-backend-main-mo-to-ensure-1-the-submitclaim-function-writes-all-fields-to-stable-storage-without-dropping-or-ignoring-any-field-2-the-getsubmissions-function-reads-from-the-same-stable-variable-and-returns-the-complete-list-3-the-submission-record-type-includes-all-fields-couponcode-rewardamount-state-city-upiid-feedback-timestamp-status-audit-usequeries-ts-to-ensure-the-usesubmitclaim-mutation-passes-all-required-fields-with-correct-types-matching-the-motoko-function-signature-and-on-success-invalidates-the-submissions-react-query-cache-key-so-adminpanel-tsx-re-fetches-fresh-data",
+      "title": "Fix the end-to-end persistence and retrieval of claim submission data so that after a user submits the claim form, the full record (coupon code, reward amount, state, city, UPI ID, feedback, timestamp, status) is correctly stored in the Motoko backend's stable state and returned in full by getSubmissions. Audit backend/main.mo to ensure: (1) the submitClaim function writes all fields to stable storage without dropping or ignoring any field; (2) the getSubmissions function reads from the same stable variable and returns the complete list; (3) the Submission record type includes all fields: couponCode, rewardAmount, state, city, upiId, feedback, timestamp, status. Audit useQueries.ts to ensure the useSubmitClaim mutation passes all required fields with correct types matching the Motoko function signature, and on success invalidates the submissions React Query cache key so AdminPanel.tsx re-fetches fresh data.",
+      "reqIds": [
+        "REQ-31"
+      ],
+      "version": 1
     }
   ],
   "new_feature_requests": [
@@ -327,6 +364,28 @@
       "summary": "Update the Motoko backend (backend/main.mo) to add a 'status' field to the Submission record type (values: 'active' or 'redeemed'). Add an update function markAsRedeemed(couponCode: Text) : async Bool that sets the status of the matching submission to 'redeemed' and returns true if found, false otherwise. Ensure the existing submitClaim and getSubmissions functions include the status field. Default status for all new submissions is 'active'.",
       "reqIds": [
         "REQ-23"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-28",
+      "summary": "After submitting the claim form, the submitted data is not appearing in the admin panel — fix the data flow so claim submissions are saved and visible in the admin panel",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-29",
+      "summary": "In backend/main.mo, ensure the actor is structured to start in a running state and does not enter a stopped condition. Add defensive guards so that if the canister is restarted, all stable state (submissions, reward records) is preserved without data loss. Verify that the submitClaim, getSubmissions, and markAsRedeemed functions are all correctly exposed as public shared functions and compile without errors that could cause the canister to stop.",
+      "reqIds": [
+        "REQ-28"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-30",
+      "summary": "Fix the 'Unauthorized: Only admins can view submissions' error in the backend. In backend/main.mo, the getSubmissions (and any other admin-gated) function must not require Internet Identity authentication or any caller-identity check that blocks access when called from the frontend admin panel. Since the admin panel uses a hardcoded frontend credential check (email/password in sessionStorage), the backend getSubmissions, getStats, and markAsRedeemed functions must be accessible without rejecting the caller as unauthorized. Remove or disable any caller-identity-based admin guard in main.mo that currently causes this rejection, so any caller (including anonymous) can invoke these query/update functions.",
+      "reqIds": [
+        "REQ-30"
       ],
       "status": "pending"
     }

@@ -33,12 +33,10 @@ export interface backendInterface {
     getCallerUserProfile(): Promise<UserProfile | null>;
     getCallerUserRole(): Promise<UserRole>;
     getRewardStats(): Promise<[bigint, Array<bigint>]>;
-    getSubmissionByCode(couponCode: string): Promise<Submission | null>;
     getUserProfile(user: Principal): Promise<UserProfile | null>;
     isCallerAdmin(): Promise<boolean>;
     markAsRedeemed(couponCode: string): Promise<void>;
     saveCallerUserProfile(profile: UserProfile): Promise<void>;
     searchByCouponPrefix(prefix: string): Promise<Array<Submission>>;
     submitClaim(couponCode: string, rewardAmount: bigint, state: string, city: string, feedback: string, upiId: string): Promise<void>;
-    updateRewardAmount(couponCode: string, newRewardAmount: bigint): Promise<void>;
 }

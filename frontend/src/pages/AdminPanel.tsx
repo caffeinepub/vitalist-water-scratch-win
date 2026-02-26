@@ -1,24 +1,23 @@
-import { useState, useMemo } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
+import type { Submission } from '../backend';
 import {
   useGetAllSubmissions,
   useGetRewardStats,
   useMarkAsRedeemed,
+  useGetSubmissionByCode,
 } from '../hooks/useQueries';
-import { useActor } from '../hooks/useActor';
-import type { Submission } from '../backend';
 
-function formatTimestamp(ts: bigint): string {
-  const ms = Number(ts) / 1_000_000;
-  return new Date(ms).toLocaleString('en-IN', {
-    day: '2-digit', month: 'short', year: 'numeric',
-    hour: '2-digit', minute: '2-digit',
+// ─── Helpers ──────────────────────────────────────────────────────────────────
+
+function formatDate(ts: bigint): string {
+  return new Date(Number(ts) / 1_000_000).toLocaleDateString('en-IN', {
+    day: '2-digit',
+    month: 'short',
+    year: 'numeric',
   });
 }
 
-function goHome() {
-  window.history.pushState({}, '', '/');
-  window.dispatchEvent(new PopStateEvent('popstate'));
-}
+// ─── Status Badge ─────────────────────────────────────────────────────────────
 
 function StatusBadge({ status }: { status: string }) {
   const isRedeemed = status === 'redeemed';
@@ -36,9 +35,7 @@ function StatusBadge({ status }: { status: string }) {
         background: isRedeemed
           ? 'oklch(0.35 0.08 145 / 0.35)'
           : 'oklch(0.35 0.10 220 / 0.35)',
-        color: isRedeemed
-          ? 'oklch(0.72 0.18 145)'
-          : 'oklch(0.72 0.14 210)',
+        color: isRedeemed ? 'oklch(0.72 0.18 145)' : 'oklch(0.72 0.14 210)',
         border: `1px solid ${isRedeemed ? 'oklch(0.55 0.18 145 / 0.40)' : 'oklch(0.55 0.14 210 / 0.40)'}`,
       }}
     >
@@ -48,42 +45,24 @@ function StatusBadge({ status }: { status: string }) {
   );
 }
 
+// ─── Coupon Verify Panel ──────────────────────────────────────────────────────
+
 function CouponVerifyPanel() {
   const [inputCode, setInputCode] = useState('');
-  const [verifyCode, setVerifyCode] = useState('');
-  const { actor } = useActor();
-  const [result, setResult] = useState<Submission | null | undefined>(undefined);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
-  const { mutate: markRedeemed, isPending: isMarking } = useMarkAsRedeemed();
+  const [searchCode, setSearchCode] = useState('');
+  const markAsRedeemed = useMarkAsRedeemed();
 
-  const handleVerify = async () => {
-    if (!inputCode.trim()) return;
-    setError('');
-    setResult(undefined);
-    setLoading(true);
-    setVerifyCode(inputCode.trim());
-    try {
-      if (!actor) throw new Error('Not connected');
-      const sub = await actor.getSubmissionByCode(inputCode.trim());
-      setResult(sub);
-    } catch (e: unknown) {
-      setError(e instanceof Error ? e.message : 'Failed to fetch');
-      setResult(null);
-    } finally {
-      setLoading(false);
-    }
+  const { data: found, isLoading, isError, error } = useGetSubmissionByCode(searchCode);
+
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    const trimmed = inputCode.trim().toUpperCase();
+    if (trimmed) setSearchCode(trimmed);
   };
 
-  const handleMarkRedeemed = () => {
-    if (!verifyCode) return;
-    markRedeemed(verifyCode, {
-      onSuccess: async () => {
-        if (!actor) return;
-        const updated = await actor.getSubmissionByCode(verifyCode);
-        setResult(updated);
-      },
-    });
+  const handleRedeem = () => {
+    if (!found) return;
+    markAsRedeemed.mutate(found.couponCode);
   };
 
   return (
@@ -96,77 +75,82 @@ function CouponVerifyPanel() {
         </div>
       </div>
 
-      <div className="admin-verify-input-row">
+      <form onSubmit={handleSearch} className="admin-verify-input-row">
         <input
           type="text"
           className="admin-verify-input"
           placeholder="e.g. VW-A1B2-C3D4"
           value={inputCode}
-          onChange={e => setInputCode(e.target.value.toUpperCase())}
-          onKeyDown={e => e.key === 'Enter' && handleVerify()}
+          onChange={(e) => setInputCode(e.target.value.toUpperCase())}
         />
         <button
+          type="submit"
           className="admin-verify-btn"
-          onClick={handleVerify}
-          disabled={loading || !inputCode.trim()}
+          disabled={isLoading || !inputCode.trim()}
         >
-          {loading ? (
+          {isLoading ? (
             <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24" fill="none">
               <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
               <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
             </svg>
-          ) : 'Verify'}
+          ) : (
+            'Verify'
+          )}
         </button>
-      </div>
+      </form>
 
-      {error && (
-        <div className="admin-verify-error">⚠️ {error}</div>
-      )}
-
-      {result === null && !error && (
-        <div className="admin-verify-not-found">
-          ❌ No submission found for <strong>{verifyCode}</strong>
+      {isError && searchCode && (
+        <div className="admin-verify-error">
+          ⚠️ {error instanceof Error ? error.message : 'Failed to fetch'}
         </div>
       )}
 
-      {result && (
+      {!isLoading && !isError && searchCode && found === null && (
+        <div className="admin-verify-not-found">
+          ❌ No submission found for <strong>{searchCode}</strong>
+        </div>
+      )}
+
+      {!isLoading && !isError && found && (
         <div className="admin-verify-result">
           <div className="admin-verify-result-header">
             <div>
-              <span className="admin-code">{result.couponCode}</span>
-              <span className="admin-reward-badge" style={{ marginLeft: '8px' }}>₹{Number(result.rewardAmount)}</span>
+              <span className="admin-code">{found.couponCode}</span>
+              <span className="admin-reward-badge" style={{ marginLeft: '8px' }}>
+                ₹{Number(found.rewardAmount)}
+              </span>
             </div>
-            <StatusBadge status={result.status} />
+            <StatusBadge status={found.status} />
           </div>
           <div className="admin-verify-result-grid">
             <div className="admin-verify-field">
               <span className="admin-verify-field-label">State</span>
-              <span className="admin-verify-field-value">{result.state}</span>
+              <span className="admin-verify-field-value">{found.state}</span>
             </div>
             <div className="admin-verify-field">
               <span className="admin-verify-field-label">City</span>
-              <span className="admin-verify-field-value">{result.city}</span>
+              <span className="admin-verify-field-value">{found.city}</span>
             </div>
             <div className="admin-verify-field">
               <span className="admin-verify-field-label">UPI ID</span>
-              <span className="admin-verify-field-value admin-upi">{result.upiId}</span>
+              <span className="admin-verify-field-value admin-upi">{found.upiId}</span>
             </div>
             <div className="admin-verify-field">
               <span className="admin-verify-field-label">Submitted</span>
-              <span className="admin-verify-field-value">{formatTimestamp(result.timestamp)}</span>
+              <span className="admin-verify-field-value">{formatDate(found.timestamp)}</span>
             </div>
             <div className="admin-verify-field" style={{ gridColumn: '1 / -1' }}>
               <span className="admin-verify-field-label">Feedback</span>
-              <span className="admin-verify-field-value">{result.feedback}</span>
+              <span className="admin-verify-field-value">{found.feedback || '—'}</span>
             </div>
           </div>
-          {result.status !== 'redeemed' && (
+          {found.status !== 'redeemed' && (
             <button
               className="admin-redeem-btn"
-              onClick={handleMarkRedeemed}
-              disabled={isMarking}
+              onClick={handleRedeem}
+              disabled={markAsRedeemed.isPending}
             >
-              {isMarking ? (
+              {markAsRedeemed.isPending ? (
                 <span className="flex items-center gap-2 justify-center">
                   <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24" fill="none">
                     <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
@@ -174,10 +158,12 @@ function CouponVerifyPanel() {
                   </svg>
                   Marking…
                 </span>
-              ) : '✓ Mark as Redeemed / Close'}
+              ) : (
+                '✓ Mark as Redeemed / Close'
+              )}
             </button>
           )}
-          {result.status === 'redeemed' && (
+          {found.status === 'redeemed' && (
             <div className="admin-verify-redeemed-note">✅ This coupon has been marked as redeemed.</div>
           )}
         </div>
@@ -186,29 +172,16 @@ function CouponVerifyPanel() {
   );
 }
 
-export default function AdminPanel() {
-  const [search, setSearch] = useState('');
-  const [statusFilter, setStatusFilter] = useState<'all' | 'active' | 'redeemed'>('all');
+// ─── Stats Row ────────────────────────────────────────────────────────────────
 
-  const { data: submissions = [], isLoading } = useGetAllSubmissions();
-  const { data: statsData } = useGetRewardStats();
-  const { mutate: markRedeemed, isPending: isMarkingId, variables: markingCode } = useMarkAsRedeemed();
-
-  const filtered = useMemo(() => {
-    let list = submissions as Submission[];
-    if (statusFilter !== 'all') {
-      list = list.filter(s => s.status === statusFilter);
-    }
-    if (search.trim()) {
-      const q = search.trim().toLowerCase();
-      list = list.filter(s => s.couponCode.toLowerCase().includes(q));
-    }
-    return list;
-  }, [submissions, search, statusFilter]);
+function StatsRow({ submissions }: { submissions: Submission[] }) {
+  const total = submissions.length;
+  const active = submissions.filter((s) => s.status === 'active').length;
+  const redeemed = submissions.filter((s) => s.status === 'redeemed').length;
 
   const rewardBreakdown = useMemo(() => {
     const counts: Record<number, number> = {};
-    submissions.forEach((s: Submission) => {
+    submissions.forEach((s) => {
       const amt = Number(s.rewardAmount);
       counts[amt] = (counts[amt] || 0) + 1;
     });
@@ -217,7 +190,80 @@ export default function AdminPanel() {
       .map(([amount, count]) => ({ amount: Number(amount), count }));
   }, [submissions]);
 
-  const totalSubmissions = statsData ? Number(statsData[0]) : submissions.length;
+  return (
+    <div className="admin-stats-row">
+      <div className="admin-stat-card admin-stat-card-primary">
+        <div className="admin-stat-icon">📊</div>
+        <div className="admin-stat-value">{total}</div>
+        <div className="admin-stat-label">Total Claims</div>
+      </div>
+      <div className="admin-stat-card admin-stat-card-active">
+        <div className="admin-stat-icon">🟢</div>
+        <div className="admin-stat-value">{active}</div>
+        <div className="admin-stat-label">Active</div>
+      </div>
+      <div className="admin-stat-card admin-stat-card-redeemed">
+        <div className="admin-stat-icon">✅</div>
+        <div className="admin-stat-value">{redeemed}</div>
+        <div className="admin-stat-label">Redeemed</div>
+      </div>
+      {rewardBreakdown.map(({ amount, count }) => (
+        <div key={amount} className="admin-stat-card">
+          <div className="admin-stat-icon">₹</div>
+          <div className="admin-stat-value">{count}</div>
+          <div className="admin-stat-label">₹{amount} Winners</div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+// ─── Main AdminPanel ──────────────────────────────────────────────────────────
+
+interface AdminPanelProps {
+  onLogout: () => void;
+}
+
+export default function AdminPanel({ onLogout }: AdminPanelProps) {
+  const [search, setSearch] = useState('');
+  const [statusFilter, setStatusFilter] = useState<'all' | 'active' | 'redeemed'>('all');
+
+  const {
+    data: submissions = [],
+    isLoading,
+    isError,
+    error,
+    refetch,
+  } = useGetAllSubmissions();
+
+  const { mutate: markRedeemed, isPending: isMarkingId, variables: markingCode } = useMarkAsRedeemed();
+
+  // Refetch on mount to ensure fresh data after a claim submission
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      refetch();
+    }, 400);
+    return () => clearTimeout(timer);
+  }, [refetch]);
+
+  const filtered = useMemo(() => {
+    let list = submissions as Submission[];
+    if (statusFilter !== 'all') {
+      list = list.filter((s) => s.status === statusFilter);
+    }
+    if (search.trim()) {
+      const q = search.trim().toLowerCase();
+      list = list.filter(
+        (s) =>
+          s.couponCode.toLowerCase().includes(q) ||
+          s.upiId.toLowerCase().includes(q) ||
+          s.city.toLowerCase().includes(q) ||
+          s.state.toLowerCase().includes(q),
+      );
+    }
+    return list;
+  }, [submissions, search, statusFilter]);
+
   const activeCount = submissions.filter((s: Submission) => s.status === 'active').length;
   const redeemedCount = submissions.filter((s: Submission) => s.status === 'redeemed').length;
 
@@ -230,41 +276,31 @@ export default function AdminPanel() {
             src="/assets/generated/vitalis-logo.dim_300x120.png"
             alt="Vitalis Water"
             className="admin-header-logo"
-            onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }}
+            onError={(e) => {
+              (e.currentTarget as HTMLImageElement).style.display = 'none';
+            }}
           />
           <div className="admin-header-right">
             <span className="admin-badge">Admin Dashboard</span>
-            <button className="admin-home-btn" onClick={goHome}>← Home</button>
+            <button
+              className="admin-home-btn"
+              onClick={() => {
+                refetch();
+              }}
+              title="Refresh data"
+            >
+              🔄 Refresh
+            </button>
+            <button className="admin-home-btn" onClick={onLogout}>
+              ← Logout
+            </button>
           </div>
         </div>
       </header>
 
       <main className="admin-main">
         {/* Stats row */}
-        <div className="admin-stats-row">
-          <div className="admin-stat-card admin-stat-card-primary">
-            <div className="admin-stat-icon">📊</div>
-            <div className="admin-stat-value">{totalSubmissions}</div>
-            <div className="admin-stat-label">Total Claims</div>
-          </div>
-          <div className="admin-stat-card admin-stat-card-active">
-            <div className="admin-stat-icon">🟢</div>
-            <div className="admin-stat-value">{activeCount}</div>
-            <div className="admin-stat-label">Active</div>
-          </div>
-          <div className="admin-stat-card admin-stat-card-redeemed">
-            <div className="admin-stat-icon">✅</div>
-            <div className="admin-stat-value">{redeemedCount}</div>
-            <div className="admin-stat-label">Redeemed</div>
-          </div>
-          {rewardBreakdown.map(({ amount, count }) => (
-            <div key={amount} className="admin-stat-card">
-              <div className="admin-stat-icon">₹</div>
-              <div className="admin-stat-value">{count}</div>
-              <div className="admin-stat-label">₹{amount} Winners</div>
-            </div>
-          ))}
-        </div>
+        <StatsRow submissions={submissions} />
 
         {/* Coupon Verification Panel */}
         <CouponVerifyPanel />
@@ -274,22 +310,33 @@ export default function AdminPanel() {
           <input
             type="text"
             className="admin-search-input"
-            placeholder="🔍  Search by coupon code…"
+            placeholder="🔍  Search by coupon, UPI, city, state…"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           />
           <div className="admin-filter-tabs">
-            {(['all', 'active', 'redeemed'] as const).map(f => (
+            {(['all', 'active', 'redeemed'] as const).map((f) => (
               <button
                 key={f}
                 className={`admin-filter-tab ${statusFilter === f ? 'admin-filter-tab-active' : ''}`}
                 onClick={() => setStatusFilter(f)}
               >
                 {f.charAt(0).toUpperCase() + f.slice(1)}
+                {f === 'active' && (
+                  <span className="tab-count-badge">{activeCount}</span>
+                )}
+                {f === 'redeemed' && (
+                  <span className="tab-count-badge">{redeemedCount}</span>
+                )}
+                {f === 'all' && (
+                  <span className="tab-count-badge">{submissions.length}</span>
+                )}
               </button>
             ))}
           </div>
-          <span className="admin-result-count">{filtered.length} result{filtered.length !== 1 ? 's' : ''}</span>
+          <span className="admin-result-count">
+            {filtered.length} result{filtered.length !== 1 ? 's' : ''}
+          </span>
         </div>
 
         {/* Table */}
@@ -298,6 +345,18 @@ export default function AdminPanel() {
             <div className="admin-loading">
               <div className="admin-spinner" />
               <p>Loading submissions…</p>
+            </div>
+          ) : isError ? (
+            <div className="admin-error-state">
+              <p>⚠️ {error instanceof Error ? error.message : 'Failed to load submissions'}</p>
+              <button
+                className="admin-retry-btn"
+                onClick={() => {
+                  refetch();
+                }}
+              >
+                Retry
+              </button>
             </div>
           ) : filtered.length === 0 ? (
             <div className="admin-empty">
@@ -320,15 +379,28 @@ export default function AdminPanel() {
               </thead>
               <tbody>
                 {filtered.map((s: Submission) => (
-                  <tr key={s.couponCode} className={s.status === 'redeemed' ? 'admin-row-redeemed' : ''}>
-                    <td><span className="admin-code">{s.couponCode}</span></td>
-                    <td><span className="admin-reward-badge">₹{Number(s.rewardAmount)}</span></td>
+                  <tr
+                    key={s.couponCode}
+                    className={s.status === 'redeemed' ? 'admin-row-redeemed' : ''}
+                  >
+                    <td>
+                      <span className="admin-code">{s.couponCode}</span>
+                    </td>
+                    <td>
+                      <span className="admin-reward-badge">₹{Number(s.rewardAmount)}</span>
+                    </td>
                     <td>{s.state}</td>
                     <td>{s.city}</td>
-                    <td><span className="admin-upi">{s.upiId}</span></td>
-                    <td><span className="admin-feedback">{s.feedback}</span></td>
-                    <td className="admin-ts">{formatTimestamp(s.timestamp)}</td>
-                    <td><StatusBadge status={s.status} /></td>
+                    <td>
+                      <span className="admin-upi">{s.upiId}</span>
+                    </td>
+                    <td>
+                      <span className="admin-feedback">{s.feedback || '—'}</span>
+                    </td>
+                    <td className="admin-ts">{formatDate(s.timestamp)}</td>
+                    <td>
+                      <StatusBadge status={s.status} />
+                    </td>
                     <td>
                       {s.status !== 'redeemed' ? (
                         <button
@@ -337,11 +409,28 @@ export default function AdminPanel() {
                           onClick={() => markRedeemed(s.couponCode)}
                         >
                           {isMarkingId && markingCode === s.couponCode ? (
-                            <svg className="animate-spin h-3 w-3" viewBox="0 0 24 24" fill="none">
-                              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
+                            <svg
+                              className="animate-spin h-3 w-3"
+                              viewBox="0 0 24 24"
+                              fill="none"
+                            >
+                              <circle
+                                className="opacity-25"
+                                cx="12"
+                                cy="12"
+                                r="10"
+                                stroke="currentColor"
+                                strokeWidth="4"
+                              />
+                              <path
+                                className="opacity-75"
+                                fill="currentColor"
+                                d="M4 12a8 8 0 018-8v8z"
+                              />
                             </svg>
-                          ) : '✓ Close'}
+                          ) : (
+                            '✓ Close'
+                          )}
                         </button>
                       ) : (
                         <span className="admin-closed-label">Closed</span>
@@ -354,6 +443,22 @@ export default function AdminPanel() {
           )}
         </div>
       </main>
+
+      {/* Footer */}
+      <footer className="admin-footer-bar">
+        <p>
+          © {new Date().getFullYear()} Vitalis Water. Built with{' '}
+          <span style={{ color: 'oklch(0.65 0.2 25)' }}>♥</span> using{' '}
+          <a
+            href={`https://caffeine.ai/?utm_source=Caffeine-footer&utm_medium=referral&utm_content=${encodeURIComponent(window.location.hostname)}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{ color: 'oklch(0.72 0.14 210)', textDecoration: 'underline' }}
+          >
+            caffeine.ai
+          </a>
+        </p>
+      </footer>
     </div>
   );
 }

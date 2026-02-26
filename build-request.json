@@ -1,37 +1,60 @@
 {
   "kind": "build_request",
-  "title": "Fix submit button error on claim form submission",
+  "title": "Fix admin authorization error and ensure claim submissions appear in admin panel",
+  "projectName": "Vitalis Water Scratch & Win",
   "priority": "high",
   "requirements": [
     {
-      "id": "REQ-25",
-      "text": "Diagnose and fix the runtime error thrown when the user clicks the 'Submit' button on the ClaimForm. Inspect the useSubmitClaim hook in useQueries.ts and the ClaimForm component to identify the exact failure point (e.g., missing or undefined actor, incorrect argument shape passed to the backend submitClaim function, type mismatch between frontend payload and Motoko actor method signature). Ensure the mutation is called with all required fields (couponCode, rewardAmount, state, city, feedback, upiId) with correct types, error boundaries are in place, and the error is surfaced to the user with a visible inline message rather than a silent failure or crash.",
-      "target": "both",
+      "id": "REQ-30",
+      "text": "Fix the 'Unauthorized: Only admins can view submissions' error in the backend. In backend/main.mo, the getSubmissions (and any other admin-gated) function must not require Internet Identity authentication or any caller-identity check that blocks access when called from the frontend admin panel. Since the admin panel uses a hardcoded frontend credential check (email/password in sessionStorage), the backend getSubmissions, getStats, and markAsRedeemed functions must be accessible without rejecting the caller as unauthorized. Remove or disable any caller-identity-based admin guard in main.mo that currently causes this rejection, so any caller (including anonymous) can invoke these query/update functions.",
+      "target": "backend",
       "source": {
         "messageIds": [
-          "msg-4"
+          "msg-1"
         ],
         "quotes": [
-          "AFTER I CLICK ON SUBMIT THERE IS A ERROR PLEASE FIX IT"
+          "first error Unauthorized: Only admins can view submissions"
         ]
       },
       "acceptanceCriteria": [
-        "Clicking 'Submit' on a fully filled-out claim form does not throw a runtime error or crash the page.",
-        "The useSubmitClaim mutation correctly calls the backend submitClaim actor method with the correct argument types matching the Motoko function signature.",
-        "If the backend call fails for any reason, an inline error message is displayed to the user inside the ClaimForm without crashing.",
-        "On a successful submission, the ConfirmationNotification component is shown and the form is hidden.",
-        "Loading state is visible on the Submit button while the mutation is in progress (e.g., spinner or disabled state)."
+        "Calling getSubmissions from the frontend admin panel no longer returns an 'Unauthorized' error.",
+        "The backend compiles and deploys without errors after removing the admin guard.",
+        "getStats and markAsRedeemed functions are similarly accessible without authorization rejection.",
+        "All previously stored stable state (submissions) is preserved after the change."
+      ]
+    },
+    {
+      "id": "REQ-31",
+      "text": "Fix the end-to-end persistence and retrieval of claim submission data so that after a user submits the claim form, the full record (coupon code, reward amount, state, city, UPI ID, feedback, timestamp, status) is correctly stored in the Motoko backend's stable state and returned in full by getSubmissions. Audit backend/main.mo to ensure: (1) the submitClaim function writes all fields to stable storage without dropping or ignoring any field; (2) the getSubmissions function reads from the same stable variable and returns the complete list; (3) the Submission record type includes all fields: couponCode, rewardAmount, state, city, upiId, feedback, timestamp, status. Audit useQueries.ts to ensure the useSubmitClaim mutation passes all required fields with correct types matching the Motoko function signature, and on success invalidates the submissions React Query cache key so AdminPanel.tsx re-fetches fresh data.",
+      "target": "both",
+      "source": {
+        "messageIds": [
+          "msg-1"
+        ],
+        "quotes": [
+          "second error after they claim it the data of coupon and other like amount and upi is not showing in admin panel"
+        ]
+      },
+      "acceptanceCriteria": [
+        "After a user submits the claim form, the admin panel immediately shows the new submission row with all fields populated: coupon code, reward amount, state, city, UPI ID, feedback, timestamp, and status.",
+        "The Motoko backend's submitClaim function stores all fields and getSubmissions returns them.",
+        "The useSubmitClaim mutation in useQueries.ts calls the backend with all required arguments and correct types.",
+        "On successful submission, the React Query submissions cache is invalidated so AdminPanel fetches fresh data.",
+        "No fields are missing or undefined in the admin panel table after submission."
       ]
     }
   ],
   "constraints": [
-    "Do not change the Motoko backend actor method signature unless a type mismatch is the confirmed root cause.",
-    "Do not modify files under frontend/src/hooks/useActor.ts or frontend/src/hooks/useInternetIdentity.ts."
+    "Do not implement Internet Identity or any on-chain authentication for the admin panel — admin access is controlled entirely by the hardcoded frontend credential check (email: shajan@vitalis.com, password: India@123) stored in sessionStorage.",
+    "All Motoko logic must remain in backend/main.mo as a single actor.",
+    "Do not modify files listed in frontend.immutablePaths.",
+    "Preserve all existing stable submission data in the backend."
   ],
   "nonGoals": [
-    "Redesigning the claim form UI.",
-    "Adding new form fields.",
-    "Changing reward logic or scratch card behaviour."
+    "Adding Internet Identity login or on-chain role-based access control.",
+    "Redesigning the admin panel UI or scratch card UI.",
+    "Changing the reward probability weights.",
+    "Adding new form fields or claim flow steps."
   ],
   "imageRequirements": {
     "required": [],

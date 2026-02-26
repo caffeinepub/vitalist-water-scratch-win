@@ -1,28 +1,32 @@
 {
   "kind": "implementation_plan",
   "version": "1.0",
-  "title": "Fix submit button error on claim form submission",
+  "title": "Fix admin authorization error and ensure claim submissions appear in admin panel",
   "requirements": [
     {
-      "id": "REQ-25",
-      "summary": "Diagnose and fix the runtime error when submitting the ClaimForm by ensuring the useSubmitClaim mutation correctly calls the backend submitClaim method with proper argument types, includes error boundaries, and displays inline error messages",
+      "id": "REQ-31",
+      "summary": "Fix end-to-end persistence and retrieval of claim submission data so that after a user submits the claim form, the full record appears correctly in the admin panel with all fields populated",
       "acceptanceCriteria": [
-        "Clicking 'Submit' on a fully filled-out claim form does not throw a runtime error or crash the page.",
-        "The useSubmitClaim mutation correctly calls the backend submitClaim actor method with the correct argument types matching the Motoko function signature.",
-        "If the backend call fails for any reason, an inline error message is displayed to the user inside the ClaimForm without crashing.",
-        "On a successful submission, the ConfirmationNotification component is shown and the form is hidden.",
-        "Loading state is visible on the Submit button while the mutation is in progress (e.g., spinner or disabled state)."
+        "After a user submits the claim form, the admin panel immediately shows the new submission row with all fields populated: coupon code, reward amount, state, city, UPI ID, feedback, timestamp, and status.",
+        "The useSubmitClaim mutation in useQueries.ts calls the backend with all required arguments and correct types.",
+        "On successful submission, the React Query submissions cache is invalidated so AdminPanel fetches fresh data.",
+        "No fields are missing or undefined in the admin panel table after submission."
       ],
       "file_operations": [
         {
           "path": "frontend/src/hooks/useQueries.ts",
           "operation": "modify",
-          "description": "Fix the useSubmitClaim mutation to ensure it calls actor.submitClaim with all six required arguments (couponCode, rewardAmount, state, city, feedback, upiId) in the correct order and with correct types. Ensure rewardAmount is passed as a BigInt. Add proper error handling that captures and returns the error message for display in the UI. Verify the mutation's onError callback properly propagates the error to the component."
+          "description": "Audit and fix the useSubmitClaim mutation to ensure it passes all required fields (couponCode, rewardAmount, state, city, feedback, upiId) with correct types matching the backend submitClaim function signature. Verify that the mutation's onSuccess callback invalidates the 'submissions' query key so that AdminPanel.tsx re-fetches fresh data immediately after a successful claim submission. Ensure the mutation properly handles bigint conversion for rewardAmount."
+        },
+        {
+          "path": "frontend/src/pages/AdminPanel.tsx",
+          "operation": "modify",
+          "description": "Audit the submissions table rendering to ensure all fields from the Submission type (couponCode, rewardAmount, state, city, upiId, feedback, timestamp, status) are correctly displayed in the table columns. Verify that the useGetAllSubmissions query properly fetches and displays the complete submission records. Add null/undefined checks and fallback displays for any optional fields to prevent missing data from causing rendering issues."
         },
         {
           "path": "frontend/src/components/ClaimForm.tsx",
           "operation": "modify",
-          "description": "Update the ClaimForm component to properly handle errors from the useSubmitClaim mutation. Ensure the mutation is called with all required fields (couponCode, rewardAmount, state, city, feedback, upiId) and that rewardAmount is converted to BigInt before passing. Add inline error display UI that shows the error message below the submit button when submission fails. Ensure the loading state on the submit button is properly wired to the mutation's isPending state. Verify that the ConfirmationNotification is shown only on successful submission."
+          "description": "Verify that the ClaimForm component collects and passes all required fields (state, city, upiId, feedback) to the submitClaim mutation along with the couponCode and rewardAmount props. Ensure form validation does not block any required fields and that the submission callback provides all arguments in the correct order and types. Confirm that the form's success handler triggers the query invalidation via the mutation's onSuccess."
         }
       ]
     }

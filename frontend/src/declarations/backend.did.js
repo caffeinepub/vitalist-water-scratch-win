@@ -34,11 +34,6 @@ export const idlService = IDL.Service({
   'getCallerUserProfile' : IDL.Func([], [IDL.Opt(UserProfile)], ['query']),
   'getCallerUserRole' : IDL.Func([], [UserRole], ['query']),
   'getRewardStats' : IDL.Func([], [IDL.Nat, IDL.Vec(IDL.Nat)], ['query']),
-  'getSubmissionByCode' : IDL.Func(
-      [IDL.Text],
-      [IDL.Opt(Submission)],
-      ['query'],
-    ),
   'getUserProfile' : IDL.Func(
       [IDL.Principal],
       [IDL.Opt(UserProfile)],
@@ -57,7 +52,6 @@ export const idlService = IDL.Service({
       [],
       [],
     ),
-  'updateRewardAmount' : IDL.Func([IDL.Text, IDL.Nat], [], []),
 });
 
 export const idlInitArgs = [];
@@ -89,11 +83,6 @@ export const idlFactory = ({ IDL }) => {
     'getCallerUserProfile' : IDL.Func([], [IDL.Opt(UserProfile)], ['query']),
     'getCallerUserRole' : IDL.Func([], [UserRole], ['query']),
     'getRewardStats' : IDL.Func([], [IDL.Nat, IDL.Vec(IDL.Nat)], ['query']),
-    'getSubmissionByCode' : IDL.Func(
-        [IDL.Text],
-        [IDL.Opt(Submission)],
-        ['query'],
-      ),
     'getUserProfile' : IDL.Func(
         [IDL.Principal],
         [IDL.Opt(UserProfile)],
@@ -112,7 +101,6 @@ export const idlFactory = ({ IDL }) => {
         [],
         [],
       ),
-    'updateRewardAmount' : IDL.Func([IDL.Text, IDL.Nat], [], []),
   });
 };
 

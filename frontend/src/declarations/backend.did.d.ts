@@ -33,7 +33,6 @@ export interface _SERVICE {
   'getCallerUserProfile' : ActorMethod<[], [] | [UserProfile]>,
   'getCallerUserRole' : ActorMethod<[], UserRole>,
   'getRewardStats' : ActorMethod<[], [bigint, Array<bigint>]>,
-  'getSubmissionByCode' : ActorMethod<[string], [] | [Submission]>,
   'getUserProfile' : ActorMethod<[Principal], [] | [UserProfile]>,
   'isCallerAdmin' : ActorMethod<[], boolean>,
   'markAsRedeemed' : ActorMethod<[string], undefined>,
@@ -43,7 +42,6 @@ export interface _SERVICE {
     [string, bigint, string, string, string, string],
     undefined
   >,
-  'updateRewardAmount' : ActorMethod<[string, bigint], undefined>,
 }
 export declare const idlService: IDL.ServiceClass;
 export declare const idlInitArgs: IDL.Type[];
